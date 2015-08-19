@@ -19,9 +19,11 @@ mongoose.connect('mongodb://localhost/sales-manage', function(err) {
 // db.once('open', function () {});
 
 var product = require('./model/product');
+var order = require('./model/order');
 
 var routes = require('./routes/index');
-var products = require('./routes/product');
+var products = require('./routes/api/product');
+var orders = require('./routes/api/order');
 
 var app = express();
 
@@ -39,6 +41,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/app', products);
+app.use('/app/orders', orders);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
