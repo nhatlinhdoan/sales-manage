@@ -8,6 +8,7 @@ module.exports = React.createClass({
     });
   },
   componentDidMount: function() {
+    // Get data list
     $.ajax({
       type: 'GET',
       dataType: 'json',
@@ -25,13 +26,15 @@ module.exports = React.createClass({
   addProduct: function(e) {
     e.preventDefault();
     var errorCount = 0;
+
+    // Checking data inputs not null
     $('#addProduct fieldset input').each(function(index, val) {
       if($(this).val() === '') { errorCount++; }
     });
 
     // Check and make sure errorCount's still at zero
     if(errorCount === 0) {
-      // If it is, compile all user info into one object
+      // If it is, compile all product info into one object
       var newProduct = {
         'category': $('#addProduct fieldset input#inputCategory').val(),
         'productname': $('#addProduct fieldset input#inputProductName').val(),
@@ -48,6 +51,8 @@ module.exports = React.createClass({
         success: function(product) {
           if(!$.isEmptyObject(product)) {
             console.log('Insert to \'/app/products\' success');
+
+            // Update product to productListData
             var newProductListData = this.state.productListData.concat(product);
             this.setState({productListData: newProductListData});
           }
@@ -69,6 +74,7 @@ module.exports = React.createClass({
   },
   deleteProduct: function(id, e) {
     e.preventDefault();
+
     var comfirmination = confirm('Are you sure?');
     if(comfirmination) {
       $.ajax({
@@ -87,31 +93,42 @@ module.exports = React.createClass({
     }
   },
   removeItemData: function(product) {
+    // Get product's index in array productListData
     var index = this.state.productListData.map(function(product){
       return product._id;
     }).indexOf(product._id);
+
+    // Update productListData
     var newProductListData = this.state.productListData;
     newProductListData.splice(index, 1);
     this.setState({productListData: newProductListData});
   },
   showProductInfo: function(index, e) {
     e.preventDefault();
+
+    // Get product at index
     var prodInfo = this.state.productListData[index];
+
+    // Adding product to state.productInfo (to show)
     this.setState({productInfo: prodInfo});
-    console.log(JSON.stringify(prodInfo));
+    
+    // Fill data to input form
     $('#addProduct fieldset input#inputCategory').val(prodInfo.category);
     $('#addProduct fieldset input#inputProductName').val(prodInfo.productname);
     $('#addProduct fieldset input#inputPrice').val(prodInfo.price);
   },
   updateProduct: function(e) {
+
     var errorCount = 0;
+
+    // Checking data inputs not null
     $('#addProduct fieldset input').each(function(index, val) {
       if($(this).val() === '') { errorCount++; }
     });
     
     // Check and make sure errorCount's still at <=1
     if(errorCount <= 1) {
-      // If it is, compile all user info into one object
+      // If it is, compile all product info into one object
       var updateObj = {
         '_id': this.state.productInfo._id,
         'category': $('#addProduct fieldset input#inputCategory').val(),
@@ -130,10 +147,12 @@ module.exports = React.createClass({
           if(!$.isEmptyObject(product)) {
             console.log('Update to \'/app/products\' success');
             
+            // Get product's index in array productListData
             var index = this.state.productListData.map(function(product){
               return product._id;
             }).indexOf(product._id);
             
+            // Update data to productListData
             var newProductListData = this.state.productListData;
             newProductListData.splice(index, 1, product);
             this.setState({productListData: newProductListData});
@@ -157,14 +176,14 @@ module.exports = React.createClass({
   cancel: function(e) {
     e.preventDefault();
     console.log(JSON.stringify(this.state.productInfo));
-    
+
     // Clear old form data
     $('#addProduct fieldset input').val('');
     this.setState({productInfo: ''});
   },
   render: function() {
     var formReturn = (
-      <div className="form-group col-xs-5 col-sm-5">
+      <div className="form-group col-xs-12 col-sm-6">
         <div id='productList' className="panel panel-default">
           <div className="panel-heading">Product List</div>
           <table className="table menu-items">
@@ -181,11 +200,11 @@ module.exports = React.createClass({
             {this.state.productListData.map(function(product, index) {
               return (
                 <tr rel={index}>
-                  <td><a href='#' className='linkShowCategory' rel={product.category}>{product.category}</a></td>
-                  <td><a href='#' className='linkShowProduct' onClick={this.showProductInfo.bind(null, index)}>{product.productname}</a></td>
+                  <td><a href='#' rel={product.category}>{product.category}</a></td>
+                  <td><a href='#' onClick={this.showProductInfo.bind(null, index)}>{product.productname}</a></td>
                   <td>{product.price}</td>
                   <td>{product.stock}</td>
-                  <td><a href='#' className='linkDeleteProduct' onClick={this.deleteProduct.bind(null, product._id)}>delete</a></td>
+                  <td><a href='#' onClick={this.deleteProduct.bind(null, product._id)}>delete</a></td>
                 </tr>
               )
             }.bind(this))}

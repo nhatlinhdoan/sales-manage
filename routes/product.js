@@ -27,7 +27,7 @@ router.route('/products')
 							}
 						});
 					}
-				});
+				}); // end of GET
 			})
 			.post(function(req, res, next) {
 				// post new product
@@ -38,17 +38,24 @@ router.route('/products')
 
 				var Product = mongoose.model('Product');
 
-				var conflictItem = Product.findOne({
+				// Checking product's information is not conflict
+				Product.findOne({
 					category : _category, 
 					productname : _productname
 				}, function(err, product) {
+
 					if (err) {
+					
 						console.error('There was the problem checking the information before insert to the database'); 
 						return next(err);
+					
 					} else if (product) {
+					
 						var ierr = new Error('Item was conflict');
 						return next(ierr);
+					
 					} else {
+						// Create a new Product object
 						var newProduct = new Product({
 							category : _category, 
 							productname : _productname, 
@@ -56,11 +63,15 @@ router.route('/products')
 							stock : _stock 
 						});
 
+						// execute adding to database
 						newProduct.save(function(err, product) {
 							if(err) { 
+
 								console.error('There was the problem adding the information to the database'); 
 								res.send(err);
+
 							} else { 
+								
 								console.log('Created successfully new Product: ' + product);
 								res.format({
 									html: function() {
@@ -72,9 +83,9 @@ router.route('/products')
 									}
 								});
 							}
-						});
+						}); // end of execute adding
 					}
-				});
+				}); // end of POST
 			})
 			.put(function(req, res, next) {
 				// update product
@@ -86,10 +97,12 @@ router.route('/products')
 
 				var Product = mongoose.model('Product');
 
-				var updateItem = Product.findById(_id, function(err, productUpdate) {
+				// Find product's information was update
+				Product.findById(_id, function(err, productUpdate) {
 					if (err) {
 						console.error('There was the problem getting the information from database: ' + err);
 						return next(err);
+
 					} else if (productUpdate) {
 
 						var changes = {
@@ -100,23 +113,28 @@ router.route('/products')
 
 						var optionsUpdate = {};
 
+						// checking fields was update
 						for (var property in changes) {
 			        if (changes.hasOwnProperty(property) && (productUpdate[property] != changes[property])) {
 		          	optionsUpdate[property] = changes[property];
 			        }
 			      }
 						
+						// execute updating
 						Product.findByIdAndUpdate(_id, optionsUpdate, function(err, product) {
 							if(err) { 
 								console.error('There was the problem updating the information to the database'); 
 								res.send(err);
 							} else { 
+								// update product will be response
 								for (var property in optionsUpdate) {
 					        if (optionsUpdate.hasOwnProperty(property)) {
 				          	product[property] = optionsUpdate[property];
 					        }
 					      }
+
 								console.log('Updated successfully Product: ' + product);
+								
 								res.format({
 									html: function() {
 										res.location('index');
@@ -127,19 +145,21 @@ router.route('/products')
 									}
 								});
 							}
-						});
+						}); // end of execute updating
 					}
-				});
+				}); // end PUT
 			});
 
 router.param('id', function(req, res, next, id) {
-	// validate 'id' value before query
+	// Validate param 'id' before query
 	mongoose.model('Product').findById(id, function(err, product) {
 		if(err) {
 			console.error(id + ' was not found');
-			res.status(404);
+
 			var ierr = new Error('Not Found');
 			ierr.status = 404;
+			
+			res.status(404);
 			res.format({
 				html: function() {
 					next(ierr);
@@ -158,8 +178,9 @@ router.param('id', function(req, res, next, id) {
 
 router.route('/products/:id')
 			.get(function(req, res, next) {
-				// get product by id
+				// Get product by id
 				console.log('Call to GetbyId API');
+
 				mongoose.model('Product').findById(req.id, function(err, product) {
 					if(err) {
 						console.error('There was the problem getting the information from database: ' + err);
@@ -175,11 +196,12 @@ router.route('/products/:id')
 							}
 						});
 					}
-				});
+				}); // end of GET
 			})
 			.delete(function(req, res, next) {
 				// delete product
 				console.log('Call to Delete API');
+				
 				mongoose.model('Product').findByIdAndRemove(req.id, function(err, product) {
 					if(err) {
 						console.error('There was the problem removing the information from database: ' + err);
@@ -195,7 +217,7 @@ router.route('/products/:id')
 							}
 						});
 					}
-				});
+				}); // end of DELETE
 			});
 
 module.exports = router;
