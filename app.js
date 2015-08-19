@@ -5,7 +5,23 @@ var express = require('express'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser');
 
+// Mongoose
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/sales-manage', function(err) {
+  if(err) {
+    console.log('connection error', err);
+  } else {
+    console.log('connection successful');
+  }
+});
+// var db = mongoose.connection;
+// db.on('error', console.error.bind(console, 'connection error:'));
+// db.once('open', function () {});
+
+var product = require('./model/product');
+
 var routes = require('./routes/index');
+var products = require('./routes/product');
 
 var app = express();
 
@@ -22,6 +38,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
+app.use('/app', products);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
