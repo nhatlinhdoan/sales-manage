@@ -29,7 +29,7 @@ $ npm start
 
 $ gulp
 
-File build locate at /public/javascripts/build/app.js
+File build locate at /client/javascripts/build/app.js
 
 
 Start web browser and open address http://localhost:3000/.
