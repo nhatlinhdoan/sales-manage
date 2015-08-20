@@ -27,7 +27,7 @@ module.exports = React.createClass({
     $.ajax({
       type: 'GET',
       dataType: 'json',
-      url: '/app/orders/count',
+      url: '/api/orders/count',
       cache: false,
       success: function(total) {
         // Get pages
@@ -41,7 +41,7 @@ module.exports = React.createClass({
 
       }.bind(this),
       error: function(xhr, status, err) {
-        console.error('/app/orders/count', status, err.toString());
+        console.error('/api/orders/count', status, err.toString());
       }.bind(this)
     });
   },
@@ -50,13 +50,13 @@ module.exports = React.createClass({
     $.ajax({
       type: 'GET',
       dataType: 'json',
-      url: '/app/orders/' + skip + '/' + limit,
+      url: '/api/orders/' + skip + '/' + limit,
       cache: false,
       success: function(orders) {
         this.setState({orderListData: orders});
       }.bind(this),
       error: function(xhr, status, err) {
-        console.error('/app/orders', status, err.toString());
+        console.error('/api/orders', status, err.toString());
       }.bind(this)
     });
   },
@@ -83,7 +83,7 @@ module.exports = React.createClass({
       $.ajax({
         type: 'POST',
         dataType: 'json',
-        url: '/app/orders',
+        url: '/api/orders',
         data: newOrder,
         success: function(order) {
           if(!$.isEmptyObject(order)) {
@@ -93,7 +93,7 @@ module.exports = React.createClass({
           }
         }.bind(this),
         error: function(xhr, status, err) {
-          console.error('/app/orders', status, err.toString());
+          console.error('/api/orders', status, err.toString());
         }.bind(this)
       });
       
@@ -114,7 +114,7 @@ module.exports = React.createClass({
       $.ajax({
         type: 'DELETE',
         dataType: 'json',
-        url: '/app/orders/' + id,
+        url: '/api/orders/' + id,
         success: function(order) {
           if(!$.isEmptyObject(order)) {
 
@@ -173,12 +173,12 @@ module.exports = React.createClass({
       $.ajax({
         type: 'PUT',
         dataType: 'json',
-        url: '/app/orders',
+        url: '/api/orders',
         data: updateObj,
         success: function(order) {
 
           if(!$.isEmptyObject(order)) {
-            console.log('Update to \'/app/orders\' success');
+            console.log('Update to \'/api/orders\' success');
             
             // Get order's index in array orderListData
             var index = this.state.orderListData.map(function(order){
@@ -196,7 +196,7 @@ module.exports = React.createClass({
           }
         }.bind(this),
         error: function(xhr, status, err) {
-          console.error('/app/orders', status, err.toString());
+          console.error('/api/orders', status, err.toString());
         }
       });
       

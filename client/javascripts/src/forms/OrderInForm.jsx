@@ -52,13 +52,13 @@ module.exports = React.createClass({
 		$.ajax({
 			type: 'GET',
 			dataType: 'json',
-			url: '/app/products',
+			url: '/api/products',
 			cache: false,
 			success: function(orders) {
 				this.setState({orderItemList: orders});
 			}.bind(this),
 			error: function(xhr, status, err) {
-				console.error('/app/orders', status, err.toString());
+				console.error('/api/orders', status, err.toString());
 			}.bind(this)
 		});
 	},
@@ -131,7 +131,7 @@ module.exports = React.createClass({
 			$.ajax({
 				type: 'POST',
 				dataType: 'json',
-				url: '/app/orders',
+				url: '/api/orders',
 				data: newOrder,
 				success: function(order) {
 					if(!$.isEmptyObject(order)) {
@@ -141,7 +141,7 @@ module.exports = React.createClass({
 					}
 				}.bind(this),
 				error: function(xhr, status, err) {
-					console.error('/app/orders', status, err.toString());
+					console.error('/api/orders', status, err.toString());
 				}.bind(this)
 			});
 			

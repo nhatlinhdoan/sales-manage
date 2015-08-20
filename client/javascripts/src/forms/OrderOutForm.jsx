@@ -3,15 +3,8 @@ var OrderOutItemRow = require('./../components/OrderOutItemRow.jsx');
 
 module.exports = React.createClass({
 	getInitialState: function() {
-		// Define structure orderItem
-		var _orderItemDefault = {
-			productid: '',
-			quantity: 0,
-			price: 0,
-			coupon: 0,
-			amount: 0
-		};
 
+		// Define Order status
 		var orderStatus = [
 			{
 				key: 'opening',
@@ -37,7 +30,6 @@ module.exports = React.createClass({
 
 		return ({
 			orderItemList: [],
-			orderItemDefault: _orderItemDefault,
 			orderStatusList: orderStatus,
 			currentOrder: {}
 		});
@@ -48,54 +40,55 @@ module.exports = React.createClass({
 		// Get date datetimepicker
 		// $('#datetimepicker').data("DateTimePicker").FUNCTION()
 	},
+	createNewOrderItem: function() {
+		// Define structure orderItem
+		var _orderItemDefault = {
+			productid: '',
+			quantity: 0,
+			price: 0,
+			coupon: 0,
+			amount: 0
+		};
+		return _orderItemDefault;
+	},
 	getProductList: function() {
 		// Request get orders list
 		$.ajax({
 			type: 'GET',
 			dataType: 'json',
-			url: '/app/products',
+			url: '/api/products',
 			cache: false,
 			success: function(orders) {
 				this.setState({orderItemList: orders});
 			}.bind(this),
 			error: function(xhr, status, err) {
-				console.error('/app/orders', status, err.toString());
+				console.error('/api/orders', status, err.toString());
 			}.bind(this)
 		});
 	},
 	pushOrderItem: function(e) {
 		e.preventDefault();
 
-		var newOrderItem = {};
-
-		for(var property in this.state.orderItemDefault) {
-			if(this.state.orderItemDefault.hasOwnProperty(property)) {
-				newOrderItem[property] = this.state.orderItemDefault[property];
-			}
-		}
+		var newOrderItem = this.createNewOrderItem();
 
 		// Push new orderItem to orderItemList
 		var newOrderItemListData = this.state.orderItemList.concat(newOrderItem);
 		this.setState({orderItemList: newOrderItemListData});
 	},
-	pullOrderItem: function(e) {
-		e.preventDefault();
+	pullOrderItem: function(that) {
 
-		// Check orderItem was remove is exist and not null
-		var index = e.target.rel;
-		var itemCheck = this.state.orderItemList[index];
+		var rowData = that.props.dataRow;
 		var isEmpty = true;
 
-		if(itemCheck) {
-			for(var property in this.state.orderItemDefault) {
-				if(this.state.orderItemDefault.hasOwnProperty(property)) {
-					if(itemCheck[property] !== '' && itemCheck[property] !== 0) {
-						isEmpty = false;
-					}
+		var orderItemDefault = this.createNewOrderItem();
+
+		// Check orderItem was remove is exist and not null
+		for(var property in orderItemDefault) {
+			if(orderItemDefault.hasOwnProperty(property)) {
+				if(rowData[property] !== '' && rowData[property] !== 0) {
+					isEmpty = false;
 				}
 			}
-		} else {
-			isEmpty = false;
 		}
 
 		// If not null then Confirm remove
@@ -103,11 +96,17 @@ module.exports = React.createClass({
 		
 		// If accept remove
 		if(comfirmination) {
+
+			var index = this.state.orderItemList.indexOf(rowData);
+console.log('before '+this.state.orderItemList.length);
 			var newOrderItemList = this.state.orderItemList;
 			newOrderItemList.splice(index, 1);
-			console.log('index: '+index);
-			console.log(''+JSON.stringify(newOrderItemList));
 			this.setState({orderItemList: newOrderItemList});
+console.log('after '+this.state.orderItemList.length);
+			// var node = that.getDOMNode();
+			// React.unmountComponentAtNode(node);
+			// $(node).remove();
+
 		}
 	},
 	addOrder: function(e) {
@@ -132,7 +131,7 @@ module.exports = React.createClass({
 			$.ajax({
 				type: 'POST',
 				dataType: 'json',
-				url: '/app/orders',
+				url: '/api/orders',
 				data: newOrder,
 				success: function(order) {
 					if(!$.isEmptyObject(order)) {
@@ -142,7 +141,7 @@ module.exports = React.createClass({
 					}
 				}.bind(this),
 				error: function(xhr, status, err) {
-					console.error('/app/orders', status, err.toString());
+					console.error('/api/orders', status, err.toString());
 				}.bind(this)
 			});
 			
@@ -221,7 +220,7 @@ module.exports = React.createClass({
 								<th>Category</th>
 								<th>Product</th>
 								<th>Quatity</th>
-								<th>Price in</th>
+								<th>Price out</th>
 								<th>Amount</th>
 								<th>Provider</th>
 								<th>Note</th>
@@ -230,8 +229,8 @@ module.exports = React.createClass({
 						</thead>
 						<tbody>
 						{
-							this.state.orderItemList.map(function(order, index) {
-								return (<OrderOutItemRow index={index} deleteRow={this.pullOrderItem}/>)
+							this.state.orderItemList.map(function(orderItem, index) {
+								return (<OrderOutItemRow key={'row-' + index} index={index} dataRowList={this.state.orderItemList} dataRow={orderItem} deleteRow={this.pullOrderItem}/>)
 							}, this)
 						}
 						</tbody>

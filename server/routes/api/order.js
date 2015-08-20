@@ -3,12 +3,12 @@ var express = require('express'),
 		mongoose = require('mongoose');
 
 router.get('/', function(req, res, next) {
-	res.redirect('/app/products');
+	res.redirect('/api/orders');
 });
 
-router.get('/products/count', function(req, res, next) {
-				// get list product
-				mongoose.model('Product').count({}, function(err, total) {
+router.get('/orders/count', function(req, res, next) {
+				// get list order
+				mongoose.model('Order').count({}, function(err, total) {
 					if(err) {
 						return next(err);
 					} else {
@@ -17,125 +17,75 @@ router.get('/products/count', function(req, res, next) {
 				}); // end of GET
 			});
 
-router.route('/products/cat/:category')
-			.get(function(req, res, next) {
-				// Get product by category
-				console.log('Call to GetbyCategory API ' + req.params.category);
-
-				var Product = mongoose.model('Product');
-
-				Product.find({category: req.params.category}, function(err, products) {
-					if(err) {
-						console.error('There was the problem getting the information from database: ' + err);
-						return next(err);
-					} else {
-						res.format({
-							html: function() {
-								res.render('index', {data: products});
-							},
-							json: function() {
-								res.json(products);
-							}
-						});
-					}
-				}); // end of GET
-			});
-
-router.route('/products/:skip/:limit')
+router.route('/orders/:skip/:limit')
 			.get(function(req, res, next) {
 
-				console.log('Call to API Get productList with limit');
+				console.log('Call to API Get orderList with limit');
 
 				var _limit = parseInt(req.params.limit),
 						_skip = parseInt(req.params.skip);
 
-				// get list product with limit
-				var query = mongoose.model('Product').find()
+				// get list order with limit
+				var query = mongoose.model('Order').find()
 					.skip(_skip)
 					.limit(_limit)
-					.exec(function(err, products) {
+					.exec(function(err, orders) {
 					if(err) {
 						return console.error(err);
 					} else {
 						res.format({
 							html: function() {
 								res.render('index', {
-									title: 'Show product list',
-									data: products
+									title: 'Show order list',
+									data: orders
 								});
 							},
 							json: function() {
-								console.log(JSON.stringify(products));
-								res.json(products);
+								console.log(JSON.stringify(orders));
+								res.json(orders);
 							}
 						});
 					}
 				}); // end of GET
 			});
 
-router.route('/products')
-			.get(function(req, res, next) {
-
-				console.log('Call to API Get all product');
-
-				var Product = mongoose.model('Product');
-
-				// get list product
-				var query = Product.find({}, function(err, products) {
-					if(err) {
-						return console.error(err);
-					} else {
-						res.format({
-							html: function() {
-								res.render('index', {
-									title: 'Show product list',
-									data: products
-								});
-							},
-							json: function() {
-								console.log(JSON.stringify(products));
-								res.json(products);
-							}
-						});
-					}
-				}); // end of GET
-			})
+router.route('/orders')
 			.post(function(req, res, next) {
-				// post new product
+				// post new order
 				var _category 		= req.body.category.trim(), 
-					_productname 	= req.body.productname.trim(), 
+					_ordername 	= req.body.ordername.trim(), 
 					_price 			= req.body.price, 
 					_stock 			= req.body.quatity;
 
-				var Product = mongoose.model('Product');
+				var order = mongoose.model('Order');
 
-				// Checking product's information is not conflict
-				Product.findOne({
+				// Checking order's information is not conflict
+				order.findOne({
 					category 	: _category, 
-					productname : _productname
-				}, function(err, product) {
+					ordername : _ordername
+				}, function(err, order) {
 
 					if (err) {
 					
 						console.error('There was the problem checking the information before insert to the database'); 
 						return next(err);
 					
-					} else if (product) {
+					} else if (order) {
 					
 						var ierr = new Error('Item was conflict');
 						return next(ierr);
 					
 					} else {
-						// Create a new Product object
-						var newProduct = new Product({
+						// Create a new order object
+						var neworder = new order({
 							category 	: _category, 
-							productname : _productname, 
+							ordername : _ordername, 
 							price 		: _price, 
 							stock 		: _stock 
 						});
 
 						// execute adding to database
-						newProduct.save(function(err, product) {
+						neworder.save(function(err, order) {
 							if(err) { 
 
 								console.error('There was the problem adding the information to the database'); 
@@ -143,14 +93,14 @@ router.route('/products')
 
 							} else { 
 								
-								console.log('Created successfully new Product: ' + product);
+								console.log('Created successfully new order: ' + order);
 								res.format({
 									html: function() {
 										res.location('index');
 										res.redirect('/index');
 									},
 									json: function() {
-										res.json(product);
+										res.json(order);
 									}
 								});
 							}
@@ -159,26 +109,26 @@ router.route('/products')
 				}); // end of POST
 			})
 			.put(function(req, res, next) {
-				// update product
+				// update order
 				var _id 			= req.body._id,
 					_category 		= req.body.category.trim(), 
-					_productname 	= req.body.productname.trim(), 
+					_ordername 	= req.body.ordername.trim(), 
 					_price 			= req.body.price;
 					// _stock 		= req.body.quatity;
 
-				var Product = mongoose.model('Product');
+				var order = mongoose.model('Order');
 
-				// Find product's information was update
-				Product.findById(_id, function(err, productUpdate) {
+				// Find order's information was update
+				order.findById(_id, function(err, orderUpdate) {
 					if (err) {
 						console.error('There was the problem getting the information from database: ' + err);
 						return next(err);
 
-					} else if (productUpdate) {
+					} else if (orderUpdate) {
 
 						var changes = {
 							category 	: _category, 
-							productname : _productname, 
+							ordername : _ordername, 
 							price 		: _price
 						};
 
@@ -186,25 +136,25 @@ router.route('/products')
 
 						// checking fields was update
 						for (var property in changes) {
-							if (changes.hasOwnProperty(property) && (productUpdate[property] != changes[property])) {
+							if (changes.hasOwnProperty(property) && (orderUpdate[property] != changes[property])) {
 								optionsUpdate[property] = changes[property];
 							}
 						}
 						
 						// execute updating
-						Product.findByIdAndUpdate(_id, optionsUpdate, function(err, product) {
+						order.findByIdAndUpdate(_id, optionsUpdate, function(err, order) {
 							if(err) { 
 								console.error('There was the problem updating the information to the database'); 
 								res.send(err);
 							} else { 
-								// update product will be response
+								// update order will be response
 								for (var property in optionsUpdate) {
 									if (optionsUpdate.hasOwnProperty(property)) {
-										product[property] = optionsUpdate[property];
+										order[property] = optionsUpdate[property];
 									}
 								}
 
-								console.log('Updated successfully Product: ' + product);
+								console.log('Updated successfully order: ' + order);
 								
 								res.format({
 									html: function() {
@@ -212,7 +162,7 @@ router.route('/products')
 										res.redirect('/index');
 									},
 									json: function() {
-										res.json(product);
+										res.json(order);
 									}
 								});
 							}
@@ -222,9 +172,8 @@ router.route('/products')
 			});
 
 router.param('id', function(req, res, next, id) {
-	console.log('Check id');
 	// Validate param 'id' before query
-	mongoose.model('Product').findById(id, function(err, product) {
+	mongoose.model('order').findById(id, function(err, order) {
 		if(err) {
 			console.error(id + ' was not found');
 
@@ -248,33 +197,33 @@ router.param('id', function(req, res, next, id) {
 	});
 });
 
-router.route('/products/:id')
+router.route('/orders/:id')
 			.get(function(req, res, next) {
-				// Get product by id
+				// Get order by id
 				console.log('Call to GetbyId API');
 
-				mongoose.model('Product').findById(req.id, function(err, product) {
+				mongoose.model('Order').findById(req.id, function(err, order) {
 					if(err) {
 						console.error('There was the problem getting the information from database: ' + err);
 						return next(err);
 					} else {
-						console.log('Find by id: ' + product._id);
+						console.log('Find by id: ' + order._id);
 						res.format({
 							html: function() {
-								res.render('index', {data: product});
+								res.render('index', order);
 							},
 							json: function() {
-								res.json(product);
+								res.json(order);
 							}
 						});
 					}
 				}); // end of GET
 			})
 			.delete(function(req, res, next) {
-				// delete product
+				// delete order
 				console.log('Call to Delete API');
 				
-				mongoose.model('Product').findByIdAndRemove(req.id, function(err, product) {
+				mongoose.model('Order').findByIdAndRemove(req.id, function(err, order) {
 					if(err) {
 						console.error('There was the problem removing the information from database: ' + err);
 						return next(err);
@@ -282,10 +231,10 @@ router.route('/products/:id')
 						console.log('Delete successfully!');
 						res.format({
 							html: function() {
-								res.render('index', product);
+								res.render('index', order);
 							},
 							json: function() {
-								res.json(product);
+								res.json(order);
 							}
 						});
 					}

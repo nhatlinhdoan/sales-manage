@@ -27,7 +27,7 @@ module.exports = React.createClass({
 		$.ajax({
 			type: 'GET',
 			dataType: 'json',
-			url: '/app/products/count',
+			url: '/api/products/count',
 			cache: false,
 			success: function(total) {
 				// Get pages
@@ -41,7 +41,7 @@ module.exports = React.createClass({
 
 			}.bind(this),
 			error: function(xhr, status, err) {
-				console.error('/app/products/count', status, err.toString());
+				console.error('/api/products/count', status, err.toString());
 			}.bind(this)
 		});
 	},
@@ -50,13 +50,13 @@ module.exports = React.createClass({
 		$.ajax({
 			type: 'GET',
 			dataType: 'json',
-			url: '/app/products/' + skip + '/' + limit,
+			url: '/api/products/' + skip + '/' + limit,
 			cache: false,
 			success: function(products) {
 				this.setState({productListData: products});
 			}.bind(this),
 			error: function(xhr, status, err) {
-				console.error('/app/products', status, err.toString());
+				console.error('/api/products', status, err.toString());
 			}.bind(this)
 		});
 	},
@@ -83,7 +83,7 @@ module.exports = React.createClass({
 			$.ajax({
 				type: 'POST',
 				dataType: 'json',
-				url: '/app/products',
+				url: '/api/products',
 				data: newProduct,
 				success: function(product) {
 					if(!$.isEmptyObject(product)) {
@@ -93,7 +93,7 @@ module.exports = React.createClass({
 					}
 				}.bind(this),
 				error: function(xhr, status, err) {
-					console.error('/app/products', status, err.toString());
+					console.error('/api/products', status, err.toString());
 				}.bind(this)
 			});
 			
@@ -114,7 +114,7 @@ module.exports = React.createClass({
 			$.ajax({
 				type: 'DELETE',
 				dataType: 'json',
-				url: '/app/products/' + id,
+				url: '/api/products/' + id,
 				success: function(product) {
 					if(!$.isEmptyObject(product)) {
 
@@ -173,12 +173,12 @@ module.exports = React.createClass({
 			$.ajax({
 				type: 'PUT',
 				dataType: 'json',
-				url: '/app/products',
+				url: '/api/products',
 				data: updateObj,
 				success: function(product) {
 
 					if(!$.isEmptyObject(product)) {
-						console.log('Update to \'/app/products\' success');
+						console.log('Update to \'/api/products\' success');
 						
 						// Get product's index in array productListData
 						var index = this.state.productListData.map(function(product){
@@ -196,7 +196,7 @@ module.exports = React.createClass({
 					}
 				}.bind(this),
 				error: function(xhr, status, err) {
-					console.error('/app/products', status, err.toString());
+					console.error('/api/products', status, err.toString());
 				}
 			});
 			
@@ -347,8 +347,8 @@ module.exports = React.createClass({
 						<input id='inputCategory' className="col-xs-6 col-sm-6" type='text' placeholder='category'/>
 						<input id='inputProductName' className="col-xs-6 col-sm-6" type='text' placeholder='productname'/>
 						<br/>
-						<input id='inputPrice' className="col-xs-6 col-sm-6" type='text' placeholder='price'/>
-						<input id='inputQuatity' className="col-xs-6 col-sm-6" type='text' placeholder='quatity'/>
+						<input id='inputPrice' className="col-xs-6 col-sm-6" type='number' placeholder='price'/>
+						<input id='inputQuatity' className="col-xs-6 col-sm-6" type='number' placeholder='quatity'/>
 						<br/>
 						{
 							this.state.productInfo ?  
