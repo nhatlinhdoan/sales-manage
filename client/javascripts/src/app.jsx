@@ -45,7 +45,7 @@ var MyApp = React.createClass({
 				<NavTop callbackFn={this.changeTab}/>
 				{
 					(this.state.currentTab == 'Products' || this.state.currentTab == 'Home') ? 
-							<OrderOutForm /> : 
+							<ProductForm /> : 
 							(this.state.currentTab == 'Orders') ? 
 								<OrderOutForm /> : 
 							(this.state.currentTab == 'About') ? 
