@@ -2,10 +2,34 @@ var express = require('express'),
 		router = express.Router(),
 		mongoose = require('mongoose');
 
-router.route('/')
-			.get(function(req, res, next) {
+router.get('/', function(req, res, next) {
+	res.redirect('/app/orders');
+});
+
+router.get('/orders/count', function(req, res, next) {
 				// get list order
-				mongoose.model('order').find({}, function(err, orders) {
+				mongoose.model('Order').count({}, function(err, total) {
+					if(err) {
+						return next(err);
+					} else {
+						res.json(total);
+					}
+				}); // end of GET
+			});
+
+router.route('/orders/:skip/:limit')
+			.get(function(req, res, next) {
+
+				console.log('Call to API Get orderList with limit');
+
+				var _limit = parseInt(req.params.limit),
+						_skip = parseInt(req.params.skip);
+
+				// get list order with limit
+				var query = mongoose.model('Order').find()
+					.skip(_skip)
+					.limit(_limit)
+					.exec(function(err, orders) {
 					if(err) {
 						return console.error(err);
 					} else {
@@ -17,26 +41,27 @@ router.route('/')
 								});
 							},
 							json: function() {
-								console.log('Call to API get order list');
 								console.log(JSON.stringify(orders));
 								res.json(orders);
 							}
 						});
 					}
 				}); // end of GET
-			})
+			});
+
+router.route('/orders')
 			.post(function(req, res, next) {
 				// post new order
 				var _category 		= req.body.category.trim(), 
-						_ordername 	= req.body.ordername.trim(), 
-						_price 				= req.body.price, 
-						_stock 				= req.body.quatity;
+					_ordername 	= req.body.ordername.trim(), 
+					_price 			= req.body.price, 
+					_stock 			= req.body.quatity;
 
-				var order = mongoose.model('order');
+				var order = mongoose.model('Order');
 
 				// Checking order's information is not conflict
 				order.findOne({
-					category : _category, 
+					category 	: _category, 
 					ordername : _ordername
 				}, function(err, order) {
 
@@ -53,10 +78,10 @@ router.route('/')
 					} else {
 						// Create a new order object
 						var neworder = new order({
-							category : _category, 
+							category 	: _category, 
 							ordername : _ordername, 
-							price : _price, 
-							stock : _stock 
+							price 		: _price, 
+							stock 		: _stock 
 						});
 
 						// execute adding to database
@@ -85,13 +110,13 @@ router.route('/')
 			})
 			.put(function(req, res, next) {
 				// update order
-				var _id 					= req.body._id,
-						_category 		= req.body.category.trim(), 
-						_ordername 	= req.body.ordername.trim(), 
-						_price 				= req.body.price;
-						// _stock 				= req.body.quatity;
+				var _id 			= req.body._id,
+					_category 		= req.body.category.trim(), 
+					_ordername 	= req.body.ordername.trim(), 
+					_price 			= req.body.price;
+					// _stock 		= req.body.quatity;
 
-				var order = mongoose.model('order');
+				var order = mongoose.model('Order');
 
 				// Find order's information was update
 				order.findById(_id, function(err, orderUpdate) {
@@ -102,9 +127,9 @@ router.route('/')
 					} else if (orderUpdate) {
 
 						var changes = {
-							category : _category, 
+							category 	: _category, 
 							ordername : _ordername, 
-							price : _price
+							price 		: _price
 						};
 
 						var optionsUpdate = {};
@@ -172,12 +197,12 @@ router.param('id', function(req, res, next, id) {
 	});
 });
 
-router.route('/:id')
+router.route('/orders/:id')
 			.get(function(req, res, next) {
 				// Get order by id
 				console.log('Call to GetbyId API');
 
-				mongoose.model('order').findById(req.id, function(err, order) {
+				mongoose.model('Order').findById(req.id, function(err, order) {
 					if(err) {
 						console.error('There was the problem getting the information from database: ' + err);
 						return next(err);
@@ -198,7 +223,7 @@ router.route('/:id')
 				// delete order
 				console.log('Call to Delete API');
 				
-				mongoose.model('order').findByIdAndRemove(req.id, function(err, order) {
+				mongoose.model('Order').findByIdAndRemove(req.id, function(err, order) {
 					if(err) {
 						console.error('There was the problem removing the information from database: ' + err);
 						return next(err);

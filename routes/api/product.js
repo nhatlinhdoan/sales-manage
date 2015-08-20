@@ -17,6 +17,30 @@ router.get('/products/count', function(req, res, next) {
 				}); // end of GET
 			});
 
+router.route('/products/cat/:category')
+			.get(function(req, res, next) {
+				// Get product by category
+				console.log('Call to GetbyCategory API ' + req.params.category);
+
+				var Product = mongoose.model('Product');
+
+				Product.find({category: req.params.category}, function(err, products) {
+					if(err) {
+						console.error('There was the problem getting the information from database: ' + err);
+						return next(err);
+					} else {
+						res.format({
+							html: function() {
+								res.render('index', {data: products});
+							},
+							json: function() {
+								res.json(products);
+							}
+						});
+					}
+				}); // end of GET
+			});
+
 router.route('/products/:skip/:limit')
 			.get(function(req, res, next) {
 
@@ -50,6 +74,32 @@ router.route('/products/:skip/:limit')
 			});
 
 router.route('/products')
+			.get(function(req, res, next) {
+
+				console.log('Call to API Get all product');
+
+				var Product = mongoose.model('Product');
+
+				// get list product
+				var query = Product.find({}, function(err, products) {
+					if(err) {
+						return console.error(err);
+					} else {
+						res.format({
+							html: function() {
+								res.render('index', {
+									title: 'Show product list',
+									data: products
+								});
+							},
+							json: function() {
+								console.log(JSON.stringify(products));
+								res.json(products);
+							}
+						});
+					}
+				}); // end of GET
+			})
 			.post(function(req, res, next) {
 				// post new product
 				var _category 		= req.body.category.trim(), 
@@ -172,6 +222,7 @@ router.route('/products')
 			});
 
 router.param('id', function(req, res, next, id) {
+	console.log('Check id');
 	// Validate param 'id' before query
 	mongoose.model('Product').findById(id, function(err, product) {
 		if(err) {
@@ -210,7 +261,7 @@ router.route('/products/:id')
 						console.log('Find by id: ' + product._id);
 						res.format({
 							html: function() {
-								res.render('index', product);
+								res.render('index', {data: product});
 							},
 							json: function() {
 								res.json(product);
