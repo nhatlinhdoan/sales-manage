@@ -21,6 +21,7 @@ mongoose.connect(config.db.mongodb, function(err) {
 
 var product = require('./server/model/product');
 var order = require('./server/model/order');
+var orderitem = require('./server/model/orderitem');
 
 var routes = require('./server/routes/index');
 var products = require('./server/routes/api/product');

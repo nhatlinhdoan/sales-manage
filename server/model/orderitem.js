@@ -5,7 +5,8 @@ var orderItemSchema = new mongoose.Schema({
 	quantity: Number,
 	price: Number,
 	coupon: Number,
-	amount: Number
+	amount: Number,
+	order: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' }
 });
 
 mongoose.model('OrderItem', orderItemSchema);

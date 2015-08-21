@@ -31,14 +31,22 @@ module.exports = React.createClass({
 		return ({
 			orderItemList: [],
 			orderStatusList: orderStatus,
-			currentOrder: {}
+			currentOrder: {
+				orderstatus: 'opening',
+				orderdate: new Date().toISOString(),
+				orderbillingdate: new Date().toISOString(),
+				amount: 0,
+				shopname: '',
+				customername: '',
+				customerphone: '',
+				customeraddress: '',
+				customernote: ''
+			}
 		});
 	},
 	componentDidMount: function() {
 		$('#inputOrderDate').datetimepicker();
 		$('#inputBillingDate').datetimepicker();
-		// Get date datetimepicker
-		// $('#datetimepicker').data("DateTimePicker").FUNCTION()
 	},
 	createNewOrderItem: function() {
 		// Define structure orderItem
@@ -98,11 +106,10 @@ module.exports = React.createClass({
 		if(comfirmination) {
 
 			var index = this.state.orderItemList.indexOf(rowData);
-console.log('before '+this.state.orderItemList.length);
 			var newOrderItemList = this.state.orderItemList;
+			
 			newOrderItemList.splice(index, 1);
 			this.setState({orderItemList: newOrderItemList});
-console.log('after '+this.state.orderItemList.length);
 			// var node = that.getDOMNode();
 			// React.unmountComponentAtNode(node);
 			// $(node).remove();
@@ -112,21 +119,49 @@ console.log('after '+this.state.orderItemList.length);
 	addOrder: function(e) {
 		e.preventDefault();
 
+		var _shopname = $('#addOrderInfo fieldset input#inputShopName').val(),
+			_orderstatus = $('#addOrderInfo fieldset input#inputOrderStatus').val(),
+			_orderdate = $('#addOrderInfo fieldset input#inputOrderDate').data("DateTimePicker").date(),
+			_orderbillingdate = $('#addOrderInfo fieldset input#inputBillingDate').data("DateTimePicker").date(),
+			_customername = $('#addOrderInfo fieldset input#inputCustomerName').val(),
+			_customerphone = $('#addOrderInfo fieldset input#inputCustomerPhone').val(),
+			_customeraddress = $('#addOrderInfo fieldset input#inputCustomerAddress').val(),
+			_customernote = $('#addOrderInfo fieldset input#inputCustomerNote').val();
+
+			_orderdate = _orderdate === null ? new Date() : _orderdate;
+			_orderbillingdate = _orderbillingdate === null ? new Date() : _orderbillingdate;
+
 		// Checking data inputs not null
-		$('#addOrderInfo fieldset input').each(function(index, val) {
-			if($(this).val() === '') { errorCount++; }
-		});
+		var errorCount = 0;
+		if(_shopname === '') { errorCount++; }
+		if(_customername === '') { errorCount++; }
+		if(_customerphone === '') { errorCount++; }
+		
+		var _orderItem = {
+			productid: '55d2bff6729e098a568b624e',
+			quantity: 5,
+			price: 550000,
+			coupon: 0,
+			amount: 2750000
+		};
 
 		// Check and make sure errorCount's still at zero
 		if(errorCount === 0) {
 			// If it is, compile all order info into one object
 			var newOrder = {
-				category: $('#addOrderInfo fieldset input#inputCategory').val(),
-				productname: $('#addOrderInfo fieldset input#inputProductName').val(),
-				price: $('#addOrderInfo fieldset input#inputPrice').val(),
-				quatity: $('#addOrderInfo fieldset input#inputQuatity').val()
+				shopname: _shopname,
+				orderstatus: _orderstatus,
+				orderdate: _orderdate.toISOString(),
+				orderbillingdate: _orderbillingdate.toISOString(),
+				customername: _customername,
+				customerphone: _customerphone,
+				customeraddress: _customeraddress,
+				customernote: _customernote,
+				orderItems: [_orderItem]
 			};
 
+			console.log('addOrder() ' + JSON.stringify(newOrder));
+			
 			// Adding newOrder to Server
 			$.ajax({
 				type: 'POST',
@@ -136,8 +171,9 @@ console.log('after '+this.state.orderItemList.length);
 				success: function(order) {
 					if(!$.isEmptyObject(order)) {
 						// Update order to orderItemList
-						var newOrderItemListData = this.state.orderItemList.concat(order);
-						this.setState({orderItemList: newOrderItemListData});
+						// var newOrderItemListData = this.state.orderItemList.concat(order);
+						// this.setState({orderItemList: newOrderItemListData});
+						console.log('Yeahhhh create success');
 					}
 				}.bind(this),
 				error: function(xhr, status, err) {
@@ -146,7 +182,7 @@ console.log('after '+this.state.orderItemList.length);
 			});
 			
 			// Clear old form data
-			$('#addOrder fieldset input').val('');
+			// $('#addOrder fieldset input').val('');
 
 		} else {
 			// If errorCount is more than 0, error out
@@ -160,11 +196,11 @@ console.log('after '+this.state.orderItemList.length);
 					<div className='panel-heading'>Create new Order</div>
 					<fieldset>
 						<div className='row col-xs-6 col-sm-6'>
-			        <div className='input-group col-xs-12 col-sm-12'>
+		        			<div className='input-group col-xs-12 col-sm-12'>
 							  <span className='input-group-addon'>Shop Name</span>
 							  <input id='inputShopName' className='form-control' type='text' placeholder='shopname'/>
 							</div>
-			        <div className='input-group col-xs-12 col-sm-12'>
+			        		<div className='input-group col-xs-12 col-sm-12'>
 							  <span className='input-group-addon'>Order Status</span>
 							  <select id='inputOrderStatus' className="form-control">
 								{
@@ -177,33 +213,33 @@ console.log('after '+this.state.orderItemList.length);
 						</div>
 
 						<div className='row col-xs-6 col-sm-6'>
-			        <div className='input-group col-xs-12 col-sm-12'>
+			        		<div className='input-group col-xs-12 col-sm-12'>
 							  <span className='input-group-addon'>Customer Name</span>
 							  <input id='inputCustomerName' className='form-control' type='text' placeholder='customername'/>
 							</div>
-			        <div className='input-group col-xs-12 col-sm-12'>
+			       			<div className='input-group col-xs-12 col-sm-12'>
 							  <span className='input-group-addon'>Customer Phone</span>
 							  <input id='inputCustomerPhone' className='form-control' type='text' placeholder='customerphone'/>
 							</div>
 						</div>
 
 						<div className='row col-xs-6 col-sm-6'>
-			        <div className='input-group col-xs-12 col-sm-12'>
+			        		<div className='input-group col-xs-12 col-sm-12'>
 							  <span className='input-group-addon'>Order Date</span>
 								<input id='inputOrderDate' className="form-control" type="text" />
 							</div>
-			        <div className='input-group col-xs-12 col-sm-12'>
+			       			 <div className='input-group col-xs-12 col-sm-12'>
 							  <span className='input-group-addon'>Billing Date</span>
 							  <input id='inputBillingDate' className='form-control' type='text' />
 							</div>
 						</div>
 
 						<div className='row col-xs-6 col-sm-6'>
-			        <div className='input-group col-xs-12 col-sm-12'>
+			       	 		<div className='input-group col-xs-12 col-sm-12'>
 							  <span className='input-group-addon'>Customer Address</span>
 							  <input id='inputCustomerAddress' className='form-control' type='text' placeholder='customeraddress'/>
 							</div>
-			        <div className='input-group col-xs-12 col-sm-12'>
+			        		<div className='input-group col-xs-12 col-sm-12'>
 							  <span className='input-group-addon'>Customer Note</span>
 							  <input id='inputCustomerNote' className='form-control' type='text' placeholder='customernote'/>
 							</div>
