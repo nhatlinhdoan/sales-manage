@@ -1,6 +1,7 @@
 # sales_manage
 Web Application to manage sales, written by NodeJs, Express.js, React.js.
-Use gulp to build app,
+
+Use gulp to build app.
 
 ##Installation on Ubuntu
 
@@ -19,6 +20,7 @@ $ npm install
 ###Run Service Mongodb
 
 $ mongod --dbpath ~/the-path-of-project/sales-manage/data
+
 $ mongod
 
 ###Run sales-manage by using command-line:
@@ -32,4 +34,4 @@ $ gulp
 File build locate at /client/javascripts/build/app.js
 
 
-Start web browser and open address http://localhost:3000/.
+Start web browser and open address http://localhost:3000/
