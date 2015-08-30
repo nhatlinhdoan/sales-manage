@@ -1,10 +1,10 @@
-var React 			= require('react'),
-		NavTop 			= require('./components/NavTop.jsx'),
-		AboutForm 	= require('./forms/AboutForm.jsx'),
-		ProductForm = require('./forms/ProductForm.jsx'),
-		OrderForm 	= require('./forms/OrderForm.jsx'),
-		OrderInForm = require('./forms/OrderInForm.jsx');
-		OrderOutForm = require('./forms/OrderOutForm.jsx');
+var React 			  = require('react'),
+		NavigationTop = require('./components/NavigationTop.jsx'),
+		AboutForm 	  = require('./forms/AboutForm.jsx'),
+		ProductForm   = require('./forms/ProductForm.jsx'),
+		OrderForm 	  = require('./forms/OrderForm.jsx'),
+		OrderInForm   = require('./forms/OrderInForm.jsx'),
+		OrderOutForm  = require('./forms/OrderOutForm.jsx');
 
 var MyApp = React.createClass({
 	getInitialState: function() {
@@ -42,7 +42,7 @@ var MyApp = React.createClass({
 	render: function() {
 		var currentForm = (
 			<div>
-				<NavTop callbackFn={this.changeTab}/>
+				<NavigationTop callbackFn={this.changeTab}/>
 				{
 					(this.state.currentTab == 'Products' || this.state.currentTab == 'Home') ? 
 							<ProductForm /> : 
