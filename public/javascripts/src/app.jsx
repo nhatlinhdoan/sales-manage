@@ -27,33 +27,45 @@ var MyApp = React.createClass({
       },
     ];
 		return ({
-			currentTab: 'Products',
+			currentTab: 'Orders',
 			tabListData: _tabListData
 		});
 	},
 	changeTab: function(tabKey) {
 		var checkTabKey = this.state.tabListData.map(function (tab) {
-		    return tab.key === tabKey;
+		   return tab.key === tabKey;
 		});
 		if(checkTabKey) {
 			this.setState({currentTab: tabKey});
 		}
 	},
+	getTab: function() {
+		switch(this.state.currentTab) {
+			case 'Products': 
+			case 'Home': 
+				return (<ProductForm />);
+				break;
+			case 'Orders': 
+				return (<OrderOutForm />);
+				break;
+			case 'About': 
+				return (<AboutForm />);
+				break;
+			default: 
+				return (<ProductForm />);
+				break;
+		}
+	},
 	render: function() {
 		var currentForm = (
 			<div>
-				<NavigationTop callbackFn={this.changeTab}/>
-				{
-					(this.state.currentTab == 'Products' || this.state.currentTab == 'Home') ? 
-							<ProductForm /> : 
-							(this.state.currentTab == 'Orders') ? 
-								<OrderOutForm /> : 
-							(this.state.currentTab == 'About') ? 
-								<AboutForm /> : 'Oh lalaaa'
-				}
+				<NavigationTop 
+					currentTab={this.state.currentTab} 
+					tabListData={this.state.tabListData}
+					onChangeTab={this.changeTab}/>
+				{this.getTab()}
 			</div>
 		);
-
 		return currentForm;
 	}
 });

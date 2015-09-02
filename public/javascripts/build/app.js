@@ -19838,33 +19838,45 @@ var MyApp = React.createClass({displayName: "MyApp",
       },
     ];
 		return ({
-			currentTab: 'Products',
+			currentTab: 'Orders',
 			tabListData: _tabListData
 		});
 	},
 	changeTab: function(tabKey) {
 		var checkTabKey = this.state.tabListData.map(function (tab) {
-		    return tab.key === tabKey;
+		   return tab.key === tabKey;
 		});
 		if(checkTabKey) {
 			this.setState({currentTab: tabKey});
 		}
 	},
+	getTab: function() {
+		switch(this.state.currentTab) {
+			case 'Products': 
+			case 'Home': 
+				return (React.createElement(ProductForm, null));
+				break;
+			case 'Orders': 
+				return (React.createElement(OrderOutForm, null));
+				break;
+			case 'About': 
+				return (React.createElement(AboutForm, null));
+				break;
+			default: 
+				return (React.createElement(ProductForm, null));
+				break;
+		}
+	},
 	render: function() {
 		var currentForm = (
 			React.createElement("div", null, 
-				React.createElement(NavigationTop, {callbackFn: this.changeTab}), 
-				
-					(this.state.currentTab == 'Products' || this.state.currentTab == 'Home') ? 
-							React.createElement(ProductForm, null) : 
-							(this.state.currentTab == 'Orders') ? 
-								React.createElement(OrderOutForm, null) : 
-							(this.state.currentTab == 'About') ? 
-								React.createElement(AboutForm, null) : 'Oh lalaaa'
-				
+				React.createElement(NavigationTop, {
+					currentTab: this.state.currentTab, 
+					tabListData: this.state.tabListData, 
+					onChangeTab: this.changeTab}), 
+				this.getTab()
 			)
 		);
-
 		return currentForm;
 	}
 });
@@ -19878,14 +19890,24 @@ React.render(
 var React = require('react');
 
 module.exports = React.createClass({displayName: "exports",
+	propTypes: {
+		dataList: React.PropTypes.array,
+		onChangeData: React.PropTypes.func
+	},
+	onChangeData: function(e) {
+		e.preventDefault();
+
+		var number = e.target.value;
+		this.props.onChangeData(number);
+	},
 	render: function() {
 		return (
 			React.createElement("div", {className: "row"}, 
 				React.createElement("div", {className: "col-sm-3"}, 
-					React.createElement("select", {className: "form-control", onChange: this.props.onChangeData}, 
+					React.createElement("select", {className: "form-control", onChange: this.onChangeData}, 
 					
 						this.props.dataList.map(function(data) {
-							return (React.createElement("option", {key: 'opt-' + data, value: data}, data))
+							return (React.createElement("option", {key: 'opt-'+data.key, value: data.key}, data.value))
 						})
 					
 					)
@@ -19899,65 +19921,26 @@ module.exports = React.createClass({displayName: "exports",
 var React = require('react');
 
 module.exports = React.createClass({displayName: "exports",
-  getInitialState: function() {
-    var tabListData = [
-      {
-        key: 'Home',
-        url: '/'
-      },
-      {
-        key: 'Products',
-        url: '/app'
-      },
-      {
-        key: 'Orders',
-        url: '/app/orders',
-        subKey: [
-          {
-            key: 'Add Order in',
-            url: '/app/orders',
-          },
-          {
-            key: 'Add Order out',
-            url: '/app/orders',
-          },
-          {
-            key: 'Orders',
-            url: '/app/orders',
-          }
-        ]
-      },
-      {
-        key: 'About',
-        url: '/about'
-      },
-    ];
-    return ({
-      tabList: tabListData,
-      currentTab: 'Home'
-    });
-  },
   changeTab: function(tabKey, e) {
     e.preventDefault();
 
-    if(tabKey) {
-      this.setState({currentTab: tabKey});
-    }
-
-    this.props.callbackFn(tabKey);
+    this.props.onChangeTab(tabKey);
+  },
+  remainingClassName: function(tab) {
+    return this.props.currentTab === tab.key ? 'active' : '';
   },
   render: function() {
     return (
       React.createElement("div", {className: "col-xs-12 col-sm-12"}, 
         React.createElement("ul", {className: "nav nav-tabs"}, 
         
-          this.state.tabList.map(function(tab) {
+          this.props.tabListData.map(function(tab) {
             return (
-              React.createElement("li", {className: this.state.currentTab === tab.key ? 'active' : ''}, 
-                React.createElement("a", {href: "#", onClick: this.changeTab.bind(null, tab.key)}, tab.key)
+              React.createElement("li", {key: 'tab-'+tab.key, className: this.remainingClassName(tab)}, 
+                React.createElement("a", {href: "", onClick: this.changeTab.bind(null, tab.key)}, tab.key)
               )
             )
-          }.bind(this))
+          }, this)
         
         )
       )
@@ -20122,11 +20105,10 @@ module.exports = React.createClass({displayName: "exports",
 				
 					this.props.pages.map(function(page, index) {
 						return (
-							React.createElement(PaginationItem, {
+							React.createElement(PaginationItem, React.__spread({
 								key: 'page-'+index, 
-								page: page, 
-								currentPage: this.props.currentPage, 
-								moveToPage: this.props.moveToPage})
+								page: page},  
+								this.props))
 						)
 					}, this)
 				
@@ -20140,11 +20122,17 @@ module.exports = React.createClass({displayName: "exports",
 var React = require('react');
 
 module.exports = React.createClass({displayName: "exports",
+	changeValue: function(e) {
+		e.preventDefault();
+		this.props.moveToPage(this.props.page[0]);
+	},
+	remainingClassName: function() {
+		return this.props.currentPage === this.props.page[0] ? 'active' : '';
+	},
   render: function() {
-  	var pageIndex = this.props.page[0];
     return (
-      React.createElement("li", {key: 'pagination' + pageIndex, className: this.props.currentPage === pageIndex ? 'active' : ''}, 
-        React.createElement("a", {href: "", onClick: this.props.moveToPage.bind(null, pageIndex)}, pageIndex)
+      React.createElement("li", {className: this.remainingClassName()}, 
+        React.createElement("a", {href: "", onClick: this.changeValue}, this.props.page[0])
       )
     );
   }
@@ -20256,13 +20244,14 @@ module.exports = React.createClass({displayName: "exports",
 		}
 	},
 	onCancel: function(e) {
+		e.preventDefault();
+
 		// Clear old form data
 		$('#addProduct fieldset input').val('');
 
-		this.props.cancel(e);
+		this.props.cancel();
 	},
 	render: function() {
-		console.log('ADDING -> render');
 		return (
 			React.createElement("div", {id: "addProduct", className: "panel panel-default"}, 
 				React.createElement("div", {className: "panel-heading"}, 
@@ -20293,37 +20282,7 @@ var React = require('react');
 var ProductRow = require('./../components/ProductRow.jsx');
 
 module.exports = React.createClass({displayName: "exports",
-	getInitialState: function() {
-		console.log('LIST -> getInitialState');
-		return {};
-	},
-	getDefaultProps: function() {
-		console.log('LIST -> getDefaultProps');
-	},
-	componentWillMount: function() {
-		console.log('LIST -> componentWillMount');
-	},
-	componentDidMount: function() {
-		console.log('LIST -> componentDidMount');
-	},
-	componentWillReceiveProps: function(nextProps) {
-		console.log('LIST -> componentWillReceiveProps');
-	},
-	shouldComponentUpdate: function(nextProps, nextState) {
-		console.log('LIST -> shouldComponentUpdate');
-		return true;
-	},
-	componentWillUpdate: function(nextProps, nextState) {
-		console.log('LIST -> componentWillUpdate');
-	},
-	componentDidUpdate: function(prevProps, prevState) {
-		console.log('LIST -> componentDidUpdate');
-	},
-	componentWillUnmount: function() {
-		console.log('LIST -> componentWillUnmount');
-	},
 	render: function() {
-		console.log('LIST -> render');
 		return (
 			React.createElement("div", {id: "productList", className: "panel panel-default"}, 
 				React.createElement("div", {className: "panel-heading"}, "Product List"), 
@@ -20341,12 +20300,11 @@ module.exports = React.createClass({displayName: "exports",
 					
 						this.props.productListData.map(function(product, index) {
 							return (
-								React.createElement(ProductRow, {
-									key: 'product-'+index, 
+								React.createElement(ProductRow, React.__spread({
+									key: 'productRow-'+index, 
 									index: index, 
-									product: product, 
-									showProductInfo: this.props.showProductInfo, 
-									deleteCallback: this.props.deleteCallback})
+									product: product}, 
+									this.props))
 							);
 						}, this)
 					
@@ -20383,43 +20341,18 @@ module.exports = React.createClass({displayName: "exports",
 			});
 		}
 	},
-	getInitialState: function() {
-		console.log('ROW -> getInitialState');
-		return {};
-	},
-	getDefaultProps: function() {
-		console.log('ROW -> getDefaultProps');
-	},
-	componentWillMount: function() {
-		console.log('ROW -> componentWillMount');
-	},
-	componentDidMount: function() {
-		console.log('ROW -> componentDidMount');
-	},
-	componentWillReceiveProps: function(nextProps) {
-		console.log('ROW -> componentWillReceiveProps');
-	},
-	shouldComponentUpdate: function(nextProps, nextState) {
-		console.log('ROW -> shouldComponentUpdate');
-		return true;
-	},
-	componentWillUpdate: function(nextProps, nextState) {
-		console.log('ROW -> componentWillUpdate');
-	},
-	componentDidUpdate: function(prevProps, prevState) {
-		console.log('ROW -> componentDidUpdate');
-	},
-	componentWillUnmount: function() {
-		console.log('ROW -> componentWillUnmount');
+	showProductInfo: function(e) {
+		e.preventDefault();
+		this.props.showProductInfo(this.props.index);
 	},
 	render: function() {
-		console.log('ROW -> render');
+		var product = this.props.product;
 		return (
 			React.createElement("tr", null, 
-				React.createElement("td", null, React.createElement("a", {href: "#", rel: this.props.product.category}, this.props.product.category)), 
-				React.createElement("td", null, React.createElement("a", {href: "#", onClick: this.props.showProductInfo.bind(null, this.props.index)}, this.props.product.productname)), 
-				React.createElement("td", null, this.props.product.price), 
-				React.createElement("td", null, this.props.product.stock), 
+				React.createElement("td", null, React.createElement("a", {href: "#", rel: product.category}, product.category)), 
+				React.createElement("td", null, React.createElement("a", {href: "#", onClick: this.showProductInfo}, product.productname)), 
+				React.createElement("td", null, product.price), 
+				React.createElement("td", null, product.stock), 
 				React.createElement("td", null, React.createElement("a", {href: "#", onClick: this.deleteProduct}, "delete"))
 			)
 		);
@@ -21356,7 +21289,6 @@ var DropDownList = require('./../components/DropDownList.jsx');
 
 module.exports = React.createClass({displayName: "exports",
 	getInitialState: function() {
-		console.log('FORM -> getInitialState');
 		return ({
 			productListData: [],
 			pages: [],
@@ -21366,8 +21298,7 @@ module.exports = React.createClass({displayName: "exports",
 		});
 	},
 	componentWillMount: function() {
-		console.log('FORM -> componentWillMount');
-
+		// preparing query
 		var limit = this.state.productsPerPage,
 				skip  = limit * (this.state.currentPage - 1);
 
@@ -21447,34 +21378,28 @@ module.exports = React.createClass({displayName: "exports",
 			}.bind(this)
 		});
 	},
-	changeProductsPerPage: function(e) {
-		e.preventDefault();
-
-		var newProductsPerPage = e.target.value;
-
+	changeProductsPerPage: function(number) {
 		// Options default
-		var limit = newProductsPerPage,
+		var limit = number,
 				skip  = 0;
 
 		// Update data list
 		this.getProductList(skip, limit);
 
-		this.setState({productsPerPage: newProductsPerPage});
+		this.setState({productsPerPage: number});
 		this.setState({currentPage: 1});
 
 		this.createPagination();
 	},
-	changeProductInfo: function(index, e) {
-		e.preventDefault();
-		
+	changeProductInfo: function(index) {
 		// Get product at index
 		var prodInfo = this.state.productListData[index];
 
 		// Change state.productInfo by prodInfo
 		this.setState({productInfo: prodInfo});
 	},
-	cancel: function(e) {
-		e.preventDefault();
+	cancel: function() {
+		// reset productInfo
 		this.setState({productInfo: ''});
 	},
 	addProductToList: function(product) {
@@ -21513,9 +21438,7 @@ module.exports = React.createClass({displayName: "exports",
 			this.setState({productListData: newProductListData});
 		}
 	},
-	moveToPage: function(pageIndex, e) {
-		e.preventDefault();
-
+	moveToPage: function(pageIndex) {
 		// Options default
 		var limit = this.state.productsPerPage,
 				skip  = limit * (pageIndex - 1);
@@ -21525,31 +21448,14 @@ module.exports = React.createClass({displayName: "exports",
 		this.createPagination();
 		this.setState({currentPage: pageIndex});	
 	},
-	getDefaultProps: function() {
-		console.log('FORM -> getDefaultProps');
-	},
-	componentDidMount: function() {
-		console.log('FORM -> componentDidMount');
-	},
-	componentWillReceiveProps: function(nextProps) {
-		console.log('FORM -> componentWillReceiveProps');
-	},
-	shouldComponentUpdate: function(nextProps, nextState) {
-		console.log('FORM -> shouldComponentUpdate');
-		return true;
-	},
-	componentWillUpdate: function(nextProps, nextState) {
-		console.log('FORM -> componentWillUpdate');
-	},
-	componentDidUpdate: function(prevProps, prevState) {
-		console.log('FORM -> componentDidUpdate');
-	},
-	componentWillUnmount: function() {
-		console.log('FORM -> componentWillUnmount');
-	},
 	render: function() {
-		console.log('FORM -> render');
-		var pageSizes = [5,10,15,20,25];
+		var pageSizes = [
+			{ key: 5, value: 5 },
+			{ key: 10, value: 10 },
+			{ key: 15, value: 15 },
+			{ key: 20, value: 20 },
+			{ key: 25, value: 25 }
+		];
 		var formReturn = (
 			React.createElement("div", {className: "form-group col-xs-12 col-sm-6"}, 
 
@@ -21558,14 +21464,17 @@ module.exports = React.createClass({displayName: "exports",
 					showProductInfo: this.changeProductInfo, 
 					deleteCallback: this.removeProductFromList}), 
 
-				React.createElement(DropDownList, {dataList: pageSizes, 
+				React.createElement(DropDownList, {
+					dataList: pageSizes, 
 					onChangeData: this.changeProductsPerPage}), 
 				
-				React.createElement(Pagination, {pages: this.state.pages, 
+				React.createElement(Pagination, {
+					pages: this.state.pages, 
 					currentPage: this.state.currentPage, 
 					moveToPage: this.moveToPage}), 
 
-				React.createElement(ProductAdding, {productInfo: this.state.productInfo, 
+				React.createElement(ProductAdding, {
+					productInfo: this.state.productInfo, 
 					updateCallback: this.updateProductToList, 
 					addCallback: this.addProductToList, 
 					cancel: this.cancel})

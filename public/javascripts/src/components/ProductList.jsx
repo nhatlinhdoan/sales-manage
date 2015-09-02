@@ -21,11 +21,10 @@ module.exports = React.createClass({
 						this.props.productListData.map(function(product, index) {
 							return (
 								<ProductRow 
-									key={'product-'+index}
+									key={'productRow-'+index}
 									index={index}
 									product={product}
-									showProductInfo={this.props.showProductInfo}
-									deleteCallback={this.props.deleteCallback}/>
+									{...this.props}/>
 							);
 						}, this)
 					}

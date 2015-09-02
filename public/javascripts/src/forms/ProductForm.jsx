@@ -15,6 +15,7 @@ module.exports = React.createClass({
 		});
 	},
 	componentWillMount: function() {
+		// preparing query
 		var limit = this.state.productsPerPage,
 				skip  = limit * (this.state.currentPage - 1);
 
@@ -94,34 +95,28 @@ module.exports = React.createClass({
 			}.bind(this)
 		});
 	},
-	changeProductsPerPage: function(e) {
-		e.preventDefault();
-
-		var newProductsPerPage = e.target.value;
-
+	changeProductsPerPage: function(number) {
 		// Options default
-		var limit = newProductsPerPage,
+		var limit = number,
 				skip  = 0;
 
 		// Update data list
 		this.getProductList(skip, limit);
 
-		this.setState({productsPerPage: newProductsPerPage});
+		this.setState({productsPerPage: number});
 		this.setState({currentPage: 1});
 
 		this.createPagination();
 	},
-	changeProductInfo: function(index, e) {
-		e.preventDefault();
-		
+	changeProductInfo: function(index) {
 		// Get product at index
 		var prodInfo = this.state.productListData[index];
 
 		// Change state.productInfo by prodInfo
 		this.setState({productInfo: prodInfo});
 	},
-	cancel: function(e) {
-		e.preventDefault();
+	cancel: function() {
+		// reset productInfo
 		this.setState({productInfo: ''});
 	},
 	addProductToList: function(product) {
@@ -160,9 +155,7 @@ module.exports = React.createClass({
 			this.setState({productListData: newProductListData});
 		}
 	},
-	moveToPage: function(pageIndex, e) {
-		e.preventDefault();
-
+	moveToPage: function(pageIndex) {
 		// Options default
 		var limit = this.state.productsPerPage,
 				skip  = limit * (pageIndex - 1);
@@ -173,8 +166,13 @@ module.exports = React.createClass({
 		this.setState({currentPage: pageIndex});	
 	},
 	render: function() {
-		console.log('FORM -> render');
-		var pageSizes = [5,10,15,20,25];
+		var pageSizes = [
+			{ key: 5, value: 5 },
+			{ key: 10, value: 10 },
+			{ key: 15, value: 15 },
+			{ key: 20, value: 20 },
+			{ key: 25, value: 25 }
+		];
 		var formReturn = (
 			<div className="form-group col-xs-12 col-sm-6">
 
@@ -183,14 +181,17 @@ module.exports = React.createClass({
 					showProductInfo={this.changeProductInfo}
 					deleteCallback={this.removeProductFromList}/>
 
-				<DropDownList dataList={pageSizes} 
+				<DropDownList 
+					dataList={pageSizes} 
 					onChangeData={this.changeProductsPerPage}/>
 				
-				<Pagination pages={this.state.pages} 
+				<Pagination 
+					pages={this.state.pages} 
 					currentPage={this.state.currentPage} 
 					moveToPage={this.moveToPage}/>
 
-				<ProductAdding productInfo={this.state.productInfo} 
+				<ProductAdding 
+					productInfo={this.state.productInfo} 
 					updateCallback={this.updateProductToList}
 					addCallback={this.addProductToList}
 					cancel={this.cancel}/>

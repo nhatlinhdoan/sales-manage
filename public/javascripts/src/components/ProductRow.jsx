@@ -22,13 +22,19 @@ module.exports = React.createClass({
 				}
 			});
 		}
+	},
+	showProductInfo: function(e) {
+		e.preventDefault();
+		this.props.showProductInfo(this.props.index);
+	},
 	render: function() {
+		var product = this.props.product;
 		return (
 			<tr>
-				<td><a href='#' rel={this.props.product.category}>{this.props.product.category}</a></td>
-				<td><a href='#' onClick={this.props.showProductInfo.bind(null, this.props.index)}>{this.props.product.productname}</a></td>
-				<td>{this.props.product.price}</td>
-				<td>{this.props.product.stock}</td>
+				<td><a href='#' rel={product.category}>{product.category}</a></td>
+				<td><a href='#' onClick={this.showProductInfo}>{product.productname}</a></td>
+				<td>{product.price}</td>
+				<td>{product.stock}</td>
 				<td><a href='#' onClick={this.deleteProduct}>delete</a></td>
 			</tr>
 		);

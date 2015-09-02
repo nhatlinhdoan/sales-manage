@@ -103,13 +103,14 @@ module.exports = React.createClass({
 		}
 	},
 	onCancel: function(e) {
+		e.preventDefault();
+
 		// Clear old form data
 		$('#addProduct fieldset input').val('');
 
-		this.props.cancel(e);
+		this.props.cancel();
 	},
 	render: function() {
-		console.log('ADDING -> render');
 		return (
 			<div id='addProduct' className="panel panel-default">
 				<div className="panel-heading">

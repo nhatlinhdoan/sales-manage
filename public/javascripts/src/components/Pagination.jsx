@@ -12,8 +12,7 @@ module.exports = React.createClass({
 							<PaginationItem 
 								key={'page-'+index} 
 								page={page} 
-								currentPage={this.props.currentPage} 
-								moveToPage={this.props.moveToPage}/>
+								{...this.props}/>
 						)
 					}, this)
 				}
