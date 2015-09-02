@@ -19,33 +19,33 @@ mongoose.connect(config.db.mongodb, function(err) {
 // db.on('error', console.error.bind(console, 'connection error:'));
 // db.once('open', function () {});
 
-var product = require('./server/model/product');
-var order = require('./server/model/order');
-var orderitem = require('./server/model/orderitem');
+var product = require('./model/product');
+var order = require('./model/order');
+var orderitem = require('./model/orderitem');
 
-var routes = require('./server/routes/index');
-var products = require('./server/routes/api/product');
-var orders = require('./server/routes/api/order');
+var routes = require('./routes/index');
+var products = require('./api/product');
+var orders = require('./api/order');
 
 var app = express();
 
 // Using React engine - render *.jade
-app.set('views', path.join(__dirname, './server/views/jade'));
+app.set('views', path.join(__dirname, './views/jade'));
 app.set('view engine', 'jade');
 
 // Using React engine - render *.jsx
-// app.set('views', path.join(__dirname, './server/views/jsx'));
+// app.set('views', path.join(__dirname, './views/jsx'));
 // app.set('view engine', 'jsx');
 // var options = { beautify: true };
 // app.engine('jsx', require('express-react-views').createEngine(options));
 
-// uncomment after placing your favicon in /client
-//app.use(favicon(path.join(__dirname, 'client', 'favicon.ico')));
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'client')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/api/products', products);
