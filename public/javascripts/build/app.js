@@ -19814,37 +19814,37 @@ var React 			  = require('react'),
 		AboutForm 	  = require('./forms/AboutForm.jsx'),
 		ProductForm   = require('./forms/ProductForm.jsx'),
 		OrderForm 	  = require('./forms/OrderForm.jsx'),
-		OrderInForm   = require('./forms/OrderInForm.jsx'),
-		OrderOutForm  = require('./forms/OrderOutForm.jsx');
+		OrderInForm   = require('./forms/OrderImportForm.jsx'),
+		OrderOutForm  = require('./forms/OrderExportForm.jsx');
 
 var MyApp = React.createClass({displayName: "MyApp",
 	getInitialState: function() {
 		var _tabListData = [
-      {
-        key: 'Home',
-        content: '<ProductForm />'
-      },
-      {
-        key: 'Products',
-        content: '<ProductForm />'
-      },
-      {
-        key: 'Orders',
-        content: '<OrderForm />'
-      },
-      {
-        key: 'About',
-        content: '<AboutForm />'
-      },
-    ];
+			{
+				key: 'Home',
+				content: '<ProductForm />'
+			},
+			{
+				key: 'Products',
+				content: '<ProductForm />'
+			},
+			{
+				key: 'Orders',
+				content: '<OrderForm />'
+			},
+			{
+				key: 'About',
+				content: '<AboutForm />'
+			},
+		];
 		return ({
-			currentTab: 'Orders',
+			currentTab: 'Home',
 			tabListData: _tabListData
 		});
 	},
 	changeTab: function(tabKey) {
 		var checkTabKey = this.state.tabListData.map(function (tab) {
-		   return tab.key === tabKey;
+			 return tab.key === tabKey;
 		});
 		if(checkTabKey) {
 			this.setState({currentTab: tabKey});
@@ -19886,7 +19886,7 @@ React.render(
 	document.getElementById('wrapper')
 );
 
-},{"./components/NavigationTop.jsx":159,"./forms/AboutForm.jsx":166,"./forms/OrderForm.jsx":167,"./forms/OrderInForm.jsx":168,"./forms/OrderOutForm.jsx":169,"./forms/ProductForm.jsx":170,"react":156}],158:[function(require,module,exports){
+},{"./components/NavigationTop.jsx":160,"./forms/AboutForm.jsx":168,"./forms/OrderExportForm.jsx":169,"./forms/OrderForm.jsx":170,"./forms/OrderImportForm.jsx":171,"./forms/ProductForm.jsx":172,"react":156}],158:[function(require,module,exports){
 var React = require('react');
 
 module.exports = React.createClass({displayName: "exports",
@@ -19894,30 +19894,48 @@ module.exports = React.createClass({displayName: "exports",
 		dataList: React.PropTypes.array,
 		onChangeData: React.PropTypes.func
 	},
+	getDefaultProps: function() {
+		return {
+			_key: 'key',
+			_value: 'value'
+		}
+	},
 	onChangeData: function(e) {
 		e.preventDefault();
 
-		var number = e.target.value;
-		this.props.onChangeData(number);
+		var value = e.target.value;
+		this.props.onChangeData(value);
 	},
 	render: function() {
+		var propKey = this.props._key;
+		var propValue = this.props._value;
 		return (
-			React.createElement("div", {className: "row"}, 
-				React.createElement("div", {className: "col-sm-3"}, 
-					React.createElement("select", {className: "form-control", onChange: this.onChangeData}, 
-					
-						this.props.dataList.map(function(data) {
-							return (React.createElement("option", {key: 'opt-'+data.key, value: data.key}, data.value))
-						})
-					
-					)
-				)
+			React.createElement("select", {className: "form-control", onChange: this.onChangeData}, 
+			
+				this.props.dataList.map(function(data) {
+					return (React.createElement("option", {key: 'opt-'+data[propKey], value: data[propKey]}, data[propValue]))
+				})
+			
 			)
 		);
 	}
 });
 
 },{"react":156}],159:[function(require,module,exports){
+var React = require('react');
+
+module.exports = React.createClass({displayName: "exports",
+	render: function() {
+		return (
+			React.createElement("div", {className: 'input-group col-xs-6 col-sm-6 '+this.props.position}, 
+			  React.createElement("span", {className: "input-group-addon w20"}, this.props.title), 
+			  React.createElement("input", {ref: this.props.ref, className: "form-control", type: "text", placeholder: this.props.placeholder})
+			)
+		)
+	}
+});
+
+},{"react":156}],160:[function(require,module,exports){
 var React = require('react');
 
 module.exports = React.createClass({displayName: "exports",
@@ -19948,32 +19966,48 @@ module.exports = React.createClass({displayName: "exports",
   }
 });
 
-},{"react":156}],160:[function(require,module,exports){
+},{"react":156}],161:[function(require,module,exports){
 var React = require('react');
+var DropDownList = require('./../components/DropDownList.jsx');
+var OrderExportItemRow = require('./../components/OrderExportItemRow.jsx');
 
 module.exports = React.createClass({displayName: "exports",
 	getInitialState: function() {
+		return ({
+			productList: [],
+			orderItem: {
+				productid: '',
+				quantity: 0,
+				price: 0,
+				coupon: 0,
+				amount: 0
+			}
+		})
+	},
+	createNewOrderItem: function() {
+		// Define structure orderItem
+		var _orderItemDefault = {
+			productid: '',
+			quantity: 0,
+			price: 0,
+			coupon: 0,
+			amount: 0
+		};
+		return _orderItemDefault;
+	},
+	getCategoryList: function() {
 		// hard code
 		var _categoryList = [
-			{ key: '' },
-			{ key: 'Ram' },
-			{ key: 'CPU' },
-			{ key: 'Pan' },
-			{ key: 'Mouse' },
-			{ key: 'Keyboard' }
+			{ key: '', value: '--- Choose ---' },
+			{ key: 'Ram', value: 'Ram' },
+			{ key: 'CPU', value: 'CPU' },
+			{ key: 'Pan', value: 'Pan' },
+			{ key: 'Mouse', value: 'Mouse' },
+			{ key: 'Keyboard', value: 'Keyboard' }
 		];
-
-		return ({
-			categoryList: _categoryList,
-			productList: [],
-			currentCategory: '',
-			currentProduct: ''
-		});
+		return _categoryList;
 	},
-	componentDidMount: function() {
-
-	},
-	getProductByCat: function(category) {
+	getProductsByCat: function(category) {
 		// Get products by Category
 		if(category) {
 			$.ajax({
@@ -19993,116 +20027,144 @@ module.exports = React.createClass({displayName: "exports",
 				}.bind(this)
 			});
 		} else {
-			this.setState({productList: []});
+			return [{}];
 		}
 	},
-	onChangeCategory: function(e) {
-		e.preventDefault();
-
-		// check category is exist in categoryList
-		var category = e.target.value;
-		var catIndex = this.state.categoryList.map(function(cat) {
-			return cat.key;
-		}).indexOf(category);
-
-		if(catIndex > 0) {
-			this.getProductByCat(category);
-		}
-		
-		this.setState({currentCategory: category});
+	onChangeCategory: function(category) {
+		// update productList
+		this.getProductsByCat(category);
 	},
-	onChangeProduct: function(e) {
-		e.preventDefault();
-
-		// Get product's price 
-		var productId = e.target.value;
-
+	onChangeProduct: function(productId) {
 		var index = this.state.productList.map(function(product) {
 			return product._id;
 		}).indexOf(productId);
 
 		if(index > -1) {
-			$('#inputPrice-' + this.props.index).val(this.state.productList[index].price);
-			this.setState({currentProduct: productId});
+			React.findDOMNode(this.refs.inputPrice).value = this.state.productList[index].price;
 		}
 		
-		$('#inputQuantity-' + this.props.index).val(0);
+		// React.findDOMNode(this.refs['inputQuantity']).value = 0;
 
 		// and calculate amount
-		// var quantity = parseInt($('#inputQuantity-' + this.props.index).val());
-		// if (quantity && quantity >= 0) {
-		// 	$('#inputAmount-' + this.props.index).val(quantity * product.price);
-		// } else {
-		// 	$('#inputAmount-' + this.props.index).val(0);
-		// }
+		var quantity = parseInt(React.findDOMNode(this.refs.inputQuantity).value);
+		if (quantity && quantity >= 0) {
+			React.findDOMNode(this.refs.inputAmount).value = quantity * product.price;
+		} else {
+			React.findDOMNode(this.refs.inputAmount).value = 0;
+		}
 	},
 	onChangePrice: function(e) {
 		e.preventDefault();
 
-		var price = $('#inputPrice-' + this.props.index).val();
+		var price = React.findDOMNode(this.refs.inputPrice).value;
 
 		// Calculate amount
-		var quantity = parseInt($('#inputQuantity-' + this.props.index).val());
+		var quantity = parseInt(React.findDOMNode(this.refs.inputQuantity).value);
 		if (quantity >= 0 && price >= 0) {
-			$('#inputAmount-' + this.props.index).val(quantity * price);
-			var newDataRow = this.props.dataRow.price;
-			newDataRow.price = price;
-			newDataRow.quantity = quantity;
-			newDataRow.amount = quantity * price;
-			this.setProps({dataRow: newDataRow});
+			React.findDOMNode(this.refs.inputAmount).value = quantity * price;
 		}
+	},
+	pushOrderItem: function(e) {
+		e.preventDefault();
+
+		// Push new orderItem to orderItemList
+		var newOrderItem = this.createNewOrderItem();
+		this.props.pushOrderItem(newOrderItem);
+	},
+	render: function() {
+		return (
+			React.createElement("div", {id: "newOrderItemList", className: "panel panel-default"}, 
+				React.createElement("div", {className: "panel-heading"}, "Add new OrderItem"), 
+				React.createElement("table", {className: "table table-bordered table-striped menu-items"}, 
+					React.createElement("thead", null, 
+						React.createElement("tr", null, 
+							React.createElement("th", null, "No."), 
+							React.createElement("th", null, "Category"), 
+							React.createElement("th", null, "Product"), 
+							React.createElement("th", null, "Quatity"), 
+							React.createElement("th", null, "Price out"), 
+							React.createElement("th", null, "Amount"), 
+							React.createElement("th", null, "Provider"), 
+							React.createElement("th", null, "Note"), 
+							React.createElement("th", null)
+						)
+					), 
+					React.createElement("tbody", null, 
+						this.props.orderItemList.map(function(orderItem, index) {
+							return (
+								React.createElement(OrderExportItemRow, {
+									key: 'orderItemRow-' + index, 
+									index: index, 
+									rowData: orderItem, 
+									deleteRow: this.props.pullOrderItem})
+						)}, this), 
+						React.createElement("tr", null, 
+							React.createElement("td", null), 
+							React.createElement("td", null, 
+								React.createElement(DropDownList, {
+									dataList: this.getCategoryList(), 
+									onChangeData: this.onChangeCategory})
+							), 
+							React.createElement("td", null, 
+								React.createElement(DropDownList, {
+									dataList: this.state.productList, 
+									onChangeData: this.onChangeProduct, 
+									_key: "_id", _value: "productname"})
+							), 
+							React.createElement("td", null, React.createElement("input", {type: "number", className: "form-control", ref: "inputQuantity", placeholder: "quatity", onChange: this.onChangePrice})), 
+							React.createElement("td", null, React.createElement("input", {type: "number", className: "form-control", ref: "inputPrice", placeholder: "price", onChange: this.onChangePrice})), 
+							React.createElement("td", null, React.createElement("span", {className: "form-control", ref: "inputAmount"}, "0")), 
+							React.createElement("td", null, React.createElement("input", {type: "text", className: "form-control", ref: "inputProvider", placeholder: "provider"})), 
+							React.createElement("td", null, React.createElement("input", {type: "text", className: "form-control", ref: "inputNote", placeholder: "note"})), 
+							React.createElement("td", null, React.createElement("button", {ref: "btnPushOrderItem", className: "btn btn-primary col-xs-12 col-sm-12", onClick: this.pushOrderItem}, "Add"))
+						)
+					)
+				)
+			)
+		)
+	}
+});
+
+},{"./../components/DropDownList.jsx":158,"./../components/OrderExportItemRow.jsx":162,"react":156}],162:[function(require,module,exports){
+var React = require('react');
+
+module.exports = React.createClass({displayName: "exports",
+	propTypes: {
+		deleteRow: React.PropTypes.func.isRequired
 	},
 	deleteRow: function(e) {
 		e.preventDefault();
 
 		// invoke to parent's function
-		if(typeof this.props.deleteRow === 'function') {
-			this.props.deleteRow(this);
-		}
+		this.props.deleteRow(this.props.index);
 	},
 	render: function() {
+		var rowData = this.props.rowData;
 		return (
 			React.createElement("tr", null, 
 				React.createElement("td", null, this.props.index + 1), 
-				React.createElement("td", null, 
-					React.createElement("select", {id: 'inputCategory-' + this.props.index, className: "form-control", onChange: this.onChangeCategory}, 
-					
-						this.state.categoryList.map(function(category) {
-							return (React.createElement("option", {value: category.key}, category.key))
-						})
-					
-					)
-				), 
-				React.createElement("td", null, 
-					React.createElement("select", {id: 'inputProduct-' + this.props.index, className: "form-control", onChange: this.onChangeProduct}, 
-					
-						this.state.productList.map(function(product) {
-							return (React.createElement("option", {value: product._id}, product.productname))
-						})
-					
-					)
-				), 
-				React.createElement("td", null, React.createElement("input", {id: 'inputQuantity-' + this.props.index, type: "number", placeholder: "quatity", onChange: this.onChangePrice})), 
-				React.createElement("td", null, React.createElement("input", {id: 'inputPrice-' + this.props.index, type: "number", placeholder: "price", onChange: this.onChangePrice})), 
-				React.createElement("td", null, React.createElement("input", {id: 'inputAmount-' + this.props.index, type: "text", placeholder: "amount", disabled: "true"})), 
-				React.createElement("td", null, React.createElement("input", {id: 'inputProvider-' + this.props.index, type: "text", placeholder: "provider"})), 
-				React.createElement("td", null, React.createElement("input", {id: 'inputNote-' + this.props.index, type: "text", placeholder: "note"})), 
+				React.createElement("td", null, rowData.category), 
+				React.createElement("td", null, rowData.productname), 
+				React.createElement("td", null, rowData.quantity), 
+				React.createElement("td", null, rowData.price), 
+				React.createElement("td", null, rowData.amount), 
+				React.createElement("td", null, rowData.provider), 
+				React.createElement("td", null, rowData.note), 
 				React.createElement("td", null, React.createElement("a", {href: "#", onClick: this.deleteRow}, "delete"))
 			)
 		)
 	}
 });
 
-},{"react":156}],161:[function(require,module,exports){
+},{"react":156}],163:[function(require,module,exports){
 var React = require('react');
 var PaginationItem = require('./../components/PaginationItem.jsx');
 
 module.exports = React.createClass({displayName: "exports",
 	render: function() {
 		return (
-			React.createElement("div", null, 
-				React.createElement("ul", {className: "pagination pagination-centered"}, 
-				
+			React.createElement("div", {className: "text-center"}, 
+				React.createElement("ul", {className: "pagination"}, 
 					this.props.pages.map(function(page, index) {
 						return (
 							React.createElement(PaginationItem, React.__spread({
@@ -20111,14 +20173,13 @@ module.exports = React.createClass({displayName: "exports",
 								this.props))
 						)
 					}, this)
-				
 				)
 			)
 		);
 	}
 });
 
-},{"./../components/PaginationItem.jsx":162,"react":156}],162:[function(require,module,exports){
+},{"./../components/PaginationItem.jsx":164,"react":156}],164:[function(require,module,exports){
 var React = require('react');
 
 module.exports = React.createClass({displayName: "exports",
@@ -20138,12 +20199,14 @@ module.exports = React.createClass({displayName: "exports",
   }
 });
 
-},{"react":156}],163:[function(require,module,exports){
+},{"react":156}],165:[function(require,module,exports){
 var React = require('react');
+var InputElm = require('./../components/InputElement.jsx');
+var DropDownList = require('./../components/DropDownList.jsx');
 
 module.exports = React.createClass({displayName: "exports",
 	shouldComponentUpdate: function(nextProps, nextState) {
-	  return nextProps.productInfo !== this.props.productInfo;
+		return nextProps.productInfo !== this.props.productInfo;
 	},
 	componentDidUpdate: function() {
 		if(this.props.productInfo !== '') {
@@ -20251,6 +20314,18 @@ module.exports = React.createClass({displayName: "exports",
 
 		this.props.cancel();
 	},
+	getCategoryList: function() {
+		// hard code
+		var _categoryList = [
+			{ key: '', value: '--- Choose ---' },
+			{ key: 'Ram', value: 'Ram' },
+			{ key: 'CPU', value: 'CPU' },
+			{ key: 'Pan', value: 'Pan' },
+			{ key: 'Mouse', value: 'Mouse' },
+			{ key: 'Keyboard', value: 'Keyboard' }
+		];
+		return _categoryList;
+	},
 	render: function() {
 		return (
 			React.createElement("div", {id: "addProduct", className: "panel panel-default"}, 
@@ -20258,12 +20333,13 @@ module.exports = React.createClass({displayName: "exports",
 					 this.props.productInfo === '' ? 'Add Product' : 'Update Product'
 				), 
 				React.createElement("fieldset", null, 
-					React.createElement("input", {id: "inputCategory", className: "col-xs-6 col-sm-6", type: "text", placeholder: "category"}), 
-					React.createElement("input", {id: "inputProductName", className: "col-xs-6 col-sm-6", type: "text", placeholder: "productname"}), 
-					React.createElement("br", null), 
-					React.createElement("input", {id: "inputPrice", className: "col-xs-6 col-sm-6", type: "number", placeholder: "price"}), 
-					React.createElement("input", {id: "inputQuatity", className: "col-xs-6 col-sm-6", type: "number", placeholder: "quatity"}), 
-					React.createElement("br", null), 
+					React.createElement("div", {className: "input-group col-xs-6 col-sm-6 pull-left"}, 
+						React.createElement("span", {className: "input-group-addon w20"}, "Category"), 
+						React.createElement(DropDownList, {dataList: this.getCategoryList()})
+					), 
+					React.createElement(InputElm, {ref: "inputProductName", title: "Product name", position: "pull-right", placeholder: "productname"}), 
+					React.createElement(InputElm, {ref: "inputPrice", title: "Price", position: "pull-left", placeholder: "price"}), 
+					React.createElement(InputElm, {ref: "inputQuatity", title: "Quatity", position: "pull-right", placeholder: "quatity"}), 
 					
 						this.props.productInfo ?  
 							React.createElement("button", {id: "btnUpdateProduct", className: "btn btn-primary col-xs-6 col-sm-6", onClick: this.updateProduct}, "Update") 
@@ -20277,7 +20353,7 @@ module.exports = React.createClass({displayName: "exports",
 	}
 });
 
-},{"react":156}],164:[function(require,module,exports){
+},{"./../components/DropDownList.jsx":158,"./../components/InputElement.jsx":159,"react":156}],166:[function(require,module,exports){
 var React = require('react');
 var ProductRow = require('./../components/ProductRow.jsx');
 
@@ -20315,7 +20391,7 @@ module.exports = React.createClass({displayName: "exports",
 	}
 });
 
-},{"./../components/ProductRow.jsx":165,"react":156}],165:[function(require,module,exports){
+},{"./../components/ProductRow.jsx":167,"react":156}],167:[function(require,module,exports){
 var React = require('react');
 
 module.exports = React.createClass({displayName: "exports",
@@ -20359,7 +20435,7 @@ module.exports = React.createClass({displayName: "exports",
 	}
 });
 
-},{"react":156}],166:[function(require,module,exports){
+},{"react":156}],168:[function(require,module,exports){
 var React = require('react');
 
 module.exports = React.createClass({displayName: "exports",
@@ -20375,659 +20451,16 @@ module.exports = React.createClass({displayName: "exports",
   }
 });
 
-},{"react":156}],167:[function(require,module,exports){
-var React = require('react');
-
-module.exports = React.createClass({displayName: "exports",
-  getInitialState: function() {
-    return ({
-      orderListData: [],
-      orderInfo: '',
-      currentPage: 1,
-      ordersPerPage: 5,
-      pages: 0,
-      links: [],
-      pageSizes: [5,10,15,20,25]
-    });
-  },
-  componentDidMount: function() {
-    // Get data to create pagination
-    this.getTotalPage();
-
-    var limit = this.state.ordersPerPage,
-        skip  = limit * (this.state.currentPage - 1);
-
-    // Get data list
-    this.getOrderList(skip, limit);
-  },
-  getTotalPage: function() {
-    // Request get count
-    $.ajax({
-      type: 'GET',
-      dataType: 'json',
-      url: '/api/orders/count',
-      cache: false,
-      success: function(total) {
-        // Get pages
-        var pages = Math.floor(total / this.state.ordersPerPage);
-        pages += (total % this.state.ordersPerPage > 0) ? 1 : 0;
-
-        this.setState({pages: pages});
-
-        // Create pagination
-        this.createPagination();
-
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error('/api/orders/count', status, err.toString());
-      }.bind(this)
-    });
-  },
-  getOrderList: function(skip, limit) {
-    // Request get orders list
-    $.ajax({
-      type: 'GET',
-      dataType: 'json',
-      url: '/api/orders/' + skip + '/' + limit,
-      cache: false,
-      success: function(orders) {
-        this.setState({orderListData: orders});
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error('/api/orders', status, err.toString());
-      }.bind(this)
-    });
-  },
-  addOrder: function(e) {
-    e.preventDefault();
-    var errorCount = 0;
-
-    // Checking data inputs not null
-    $('#addOrder fieldset input').each(function(index, val) {
-      if($(this).val() === '') { errorCount++; }
-    });
-
-    // Check and make sure errorCount's still at zero
-    if(errorCount === 0) {
-      // If it is, compile all order info into one object
-      var newOrder = {
-        category: $('#addOrder fieldset input#inputCategory').val(),
-        productname: $('#addOrder fieldset input#inputProductName').val(),
-        price: $('#addOrder fieldset input#inputPrice').val(),
-        quatity: $('#addOrder fieldset input#inputQuatity').val()
-      };
-
-      // Adding newProduct to Server
-      $.ajax({
-        type: 'POST',
-        dataType: 'json',
-        url: '/api/orders',
-        data: newOrder,
-        success: function(order) {
-          if(!$.isEmptyObject(order)) {
-            // Update order to orderListData
-            var newOrderListData = this.state.orderListData.concat(order);
-            this.setState({orderListData: newOrderListData});
-          }
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error('/api/orders', status, err.toString());
-        }.bind(this)
-      });
-      
-      // Clear old form data
-      $('#addOrder fieldset input').val('');
-
-    } else {
-      // If errorCount is more than 0, error out
-      console.error('Please fill in all fields');
-    }
-  },
-  deleteProduct: function(id, e) {
-    e.preventDefault();
-
-    var comfirmination = confirm('Are you sure?');
-    
-    if(comfirmination) {
-      $.ajax({
-        type: 'DELETE',
-        dataType: 'json',
-        url: '/api/orders/' + id,
-        success: function(order) {
-          if(!$.isEmptyObject(order)) {
-
-            // Get order's index in array orderListData
-            var index = this.state.orderListData.map(function(order){
-              return order._id;
-            }).indexOf(order._id);
-
-            // Update orderListData
-            var newOrderListData = this.state.orderListData;
-            newOrderListData.splice(index, 1);
-
-            this.setState({orderListData: newOrderListData});
-          
-          } else {
-            return;
-          }
-        }.bind(this)
-      });
-    }
-  },
-  showorderInfo: function(index, e) {
-    e.preventDefault();
-
-    // Get product at index
-    var orderInfo = this.state.orderListData[index];
-
-    // Adding product to state.orderInfo (to show)
-    this.setState({orderInfo: orderInfo});
-    
-    // Fill data to input form
-    $('#addOrder fieldset input#inputCategory').val(orderInfo.category);
-    $('#addOrder fieldset input#inputProductName').val(orderInfo.productname);
-    $('#addOrder fieldset input#inputPrice').val(orderInfo.price);
-  },
-  updateProduct: function(e) {
-
-    var errorCount = 0;
-
-    // Checking data inputs not null
-    $('#addOrder fieldset input').each(function(index, val) {
-      if($(this).val() === '') { errorCount++; }
-    });
-    
-    // Check and make sure errorCount's still at <=1
-    if(errorCount <= 1) {
-      // If it is, compile all order info into one object
-      var updateObj = {
-        '_id': this.state.orderInfo._id,
-        'category': $('#addOrder fieldset input#inputCategory').val(),
-        'productname': $('#addOrder fieldset input#inputProductName').val(),
-        'price': $('#addOrder fieldset input#inputPrice').val()
-      };
-
-      // Adding updateObj to Server
-      $.ajax({
-        type: 'PUT',
-        dataType: 'json',
-        url: '/api/orders',
-        data: updateObj,
-        success: function(order) {
-
-          if(!$.isEmptyObject(order)) {
-            console.log('Update to \'/api/orders\' success');
-            
-            // Get order's index in array orderListData
-            var index = this.state.orderListData.map(function(order){
-              return order._id;
-            }).indexOf(order._id);
-            
-            // Update data to orderListData
-            var newOrderListData = this.state.orderListData;
-            newOrderListData.splice(index, 1, order);
-            this.setState({orderListData: newOrderListData});
-            
-            // Clear old form data
-            $('#addOrder fieldset input').val('');
-            this.setState({orderInfo: ''});
-          }
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error('/api/orders', status, err.toString());
-        }
-      });
-      
-    } else {
-      // If errorCount is more than 1, error out
-      console.error('Please fill in all fields');
-      return;
-    }
-  },
-  cancel: function(e) {
-    e.preventDefault();
-
-    // Clear old form data
-    $('#addOrder fieldset input').val('');
-    this.setState({orderInfo: ''});
-  },
-  moveToPage: function(e) {
-    e.preventDefault();
-    var pageIndex = e.target.rel;
-
-    // Options default
-    var limit = this.state.ordersPerPage,
-        skip  = limit * (pageIndex - 1);
-
-    // Update data list
-    this.getOrderList(skip, limit);
-
-    this.getTotalPage();
-
-    this.setState({currentPage: pageIndex});  
-  },
-  changeOrdersPerPage: function(e) {
-    e.preventDefault();
-
-    var newordersPerPage = e.target.value;
-
-    // Options default
-    var limit = newordersPerPage,
-        skip  = 0;
-
-    // Update data list
-    this.getOrderList(skip, limit);
-
-    this.setState({ordersPerPage: newordersPerPage});
-    this.setState({currentPage: 1});
-
-    this.getTotalPage();
-  },
-  createPagination: function() {
-
-    var pages = this.state.pages,
-        current = this.state.currentPage,
-        linksData = [];
-
-    for (var pageIndex = 1; pageIndex <= pages; pageIndex++) {
-      if (pageIndex >= 1 && pageIndex <= pages) {
-        linksData.push([pageIndex, pageIndex]);
-      }
-    }
-
-    this.setState({links: linksData});
-  },
-  render: function() {
-    var formReturn = (
-      React.createElement("div", {className: "form-group col-xs-12 col-sm-6"}, 
-        React.createElement("div", {id: "productList", className: "panel panel-default"}, 
-          React.createElement("div", {className: "panel-heading"}, "Product List"), 
-          React.createElement("table", {className: "table table-bordered table-striped menu-items"}, 
-            React.createElement("thead", null, 
-              React.createElement("tr", null, 
-                React.createElement("th", null, "No."), 
-                React.createElement("th", null, "OrderDate"), 
-                React.createElement("th", null, "ProductName"), 
-                React.createElement("th", null, "Quatity"), 
-                React.createElement("th", null, "Stock"), 
-                React.createElement("th", null, "Price in"), 
-                React.createElement("th", null, "Amount"), 
-                React.createElement("th", null, "Provider"), 
-                React.createElement("th", null, "Note"), 
-                React.createElement("th", null, "Delete?")
-              )
-            ), 
-            React.createElement("tbody", null, 
-            
-              this.state.orderListData.map(function(order, index) {
-                return (
-                  React.createElement("tr", {key: 'tr' + index}, 
-                    React.createElement("td", null, React.createElement("a", {href: "#", rel: order.category}, order.category)), 
-                    React.createElement("td", null, React.createElement("a", {href: "#", onClick: this.showorderInfo.bind(null, index)}, order.ordername)), 
-                    React.createElement("td", null, order.price), 
-                    React.createElement("td", null, order.stock), 
-                    React.createElement("td", null, order.stock), 
-                    React.createElement("td", null, order.stock), 
-                    React.createElement("td", null, order.stock), 
-                    React.createElement("td", null, order.stock), 
-                    React.createElement("td", null, order.stock), 
-                    React.createElement("td", null, React.createElement("a", {href: "#", onClick: this.deleteOrder.bind(null, order._id)}, "delete"))
-                  )
-                )
-              }, this)
-            
-            )
-          )
-        ), 
-        React.createElement("div", {className: "row"}, 
-          React.createElement("div", {className: "col-sm-3"}, 
-            React.createElement("select", {className: "form-control", onChange: this.changeOrdersPerPage}, 
-            
-              this.state.pageSizes.map(function(size) {
-                return (React.createElement("option", {key: 'size' + size, value: size}, size))
-              })
-            
-            )
-          )
-        ), 
-        React.createElement("div", null, 
-          React.createElement("ul", {className: "pagination pagination-centered"}, 
-          
-            this.state.links.map(function(link) {
-              return (
-                React.createElement("li", {key: 'pagination' + link[0], className: this.state.currentPage === link[0] ? 'active' : ''}, 
-                  React.createElement("a", {href: "#", rel: link[0], onClick: this.moveToPage}, link[1])
-                )
-              )
-            }, this)
-          
-          )
-        ), 
-        React.createElement("div", {id: "addOrder", className: "panel panel-default"}, 
-          React.createElement("div", {className: "panel-heading"}, 
-            
-              this.state.orderInfo ? 'Update Product' : 'Add Product'
-            
-          ), 
-          React.createElement("fieldset", null, 
-            React.createElement("input", {id: "inputCategory", className: "col-xs-6 col-sm-6", type: "text", placeholder: "category"}), 
-            React.createElement("input", {id: "inputProductName", className: "col-xs-6 col-sm-6", type: "text", placeholder: "productname"}), 
-            React.createElement("br", null), 
-            React.createElement("input", {id: "inputPrice", className: "col-xs-6 col-sm-6", type: "text", placeholder: "price"}), 
-            React.createElement("input", {id: "inputQuatity", className: "col-xs-6 col-sm-6", type: "text", placeholder: "quatity"}), 
-            React.createElement("br", null), 
-            
-              this.state.orderInfo ?  
-                React.createElement("button", {id: "btnUpdateProduct", className: "btn btn-primary col-xs-6 col-sm-6", onClick: this.updateProduct}, "Update") 
-                :
-                React.createElement("button", {id: "btnAddOrder", className: "btn btn-primary col-xs-6 col-sm-6", onClick: this.addOrder}, "Add Product"), 
-            
-            React.createElement("button", {id: "btnCancel", className: "btn btn-primary col-xs-6 col-sm-6", onClick: this.cancel}, "Cancel")
-          )
-        )
-      )
-    );
-
-    return formReturn;
-  }
-});
-
-},{"react":156}],168:[function(require,module,exports){
-var React = require('react');
-
-module.exports = React.createClass({displayName: "exports",
-	getInitialState: function() {
-		// Define structure orderItem
-		var _orderItemDefault = {
-			productid: '',
-			quantity: 0,
-			price: 0,
-			coupon: 0,
-			amount: 0
-		};
-
-		var orderStatus = [
-			{
-				key: 'opening',
-				content: 'Opening'
-			},
-			{
-				key: 'processing',
-				content: 'Processing'
-			},
-			{
-				key: 'finish',
-				content: 'Finish'
-			},
-			{
-				key: 'depending',
-				content: 'Depending'
-			},
-			{
-				key: 'fail',
-				content: 'Fail'
-			}
-		];
-
-		return ({
-			orderItemList: [],
-			orderItemDefault: _orderItemDefault,
-			orderStatusList: orderStatus,
-			currentOrder: {}
-		});
-	},
-	componentDidMount: function() {
-		$('#inputOrderDate').datetimepicker();
-		$('#inputBillingDate').datetimepicker();
-		// Get date datetimepicker
-		// $('#datetimepicker').data("DateTimePicker").FUNCTION()
-	},
-	getProductList: function() {
-		// Request get orders list
-		$.ajax({
-			type: 'GET',
-			dataType: 'json',
-			url: '/api/products',
-			cache: false,
-			success: function(orders) {
-				this.setState({orderItemList: orders});
-			}.bind(this),
-			error: function(xhr, status, err) {
-				console.error('/api/orders', status, err.toString());
-			}.bind(this)
-		});
-	},
-	pushOrderItem: function(e) {
-		e.preventDefault();
-
-		var newOrderItem = {};
-
-		for(var property in this.state.orderItemDefault) {
-			if(this.state.orderItemDefault.hasOwnProperty(property)) {
-				newOrderItem[property] = this.state.orderItemDefault[property];
-			}
-		}
-
-		// Push new orderItem to orderItemList
-		var newOrderItemListData = this.state.orderItemList.concat(newOrderItem);
-		this.setState({orderItemList: newOrderItemListData});
-	},
-	pullOrderItem: function(e) {
-		e.preventDefault();
-
-		// Check orderItem was remove is exist and not null
-		var index = e.target.rel;
-		var itemCheck = this.state.orderItemList[index];
-		var isEmpty = true;
-
-		if(itemCheck) {
-			for(var property in this.state.orderItemDefault) {
-				if(this.state.orderItemDefault.hasOwnProperty(property)) {
-					if(itemCheck[property] !== '' && itemCheck[property] !== 0) {
-						isEmpty = false;
-					}
-				}
-			}
-		} else {
-			isEmpty = false;
-		}
-
-		// If not null then Confirm remove
-		var comfirmination = !isEmpty ? confirm('Are you sure?') : true;
-		
-		// If accept remove
-		if(comfirmination) {
-			var newOrderItemList = this.state.orderItemList;
-			newOrderItemList.splice(index, 1);
-			console.log('index: '+index);
-			console.log(''+JSON.stringify(newOrderItemList));
-			this.setState({orderItemList: newOrderItemList});
-		}
-	},
-	addOrder: function(e) {
-		e.preventDefault();
-
-		// Checking data inputs not null
-		$('#addOrderInfo fieldset input').each(function(index, val) {
-			if($(this).val() === '') { errorCount++; }
-		});
-
-		// Check and make sure errorCount's still at zero
-		if(errorCount === 0) {
-			// If it is, compile all order info into one object
-			var newOrder = {
-				category: $('#addOrderInfo fieldset input#inputCategory').val(),
-				productname: $('#addOrderInfo fieldset input#inputProductName').val(),
-				price: $('#addOrderInfo fieldset input#inputPrice').val(),
-				quatity: $('#addOrderInfo fieldset input#inputQuatity').val()
-			};
-
-			// Adding newOrder to Server
-			$.ajax({
-				type: 'POST',
-				dataType: 'json',
-				url: '/api/orders',
-				data: newOrder,
-				success: function(order) {
-					if(!$.isEmptyObject(order)) {
-						// Update order to orderItemList
-						var newOrderItemListData = this.state.orderItemList.concat(order);
-						this.setState({orderItemList: newOrderItemListData});
-					}
-				}.bind(this),
-				error: function(xhr, status, err) {
-					console.error('/api/orders', status, err.toString());
-				}.bind(this)
-			});
-			
-			// Clear old form data
-			$('#addOrder fieldset input').val('');
-
-		} else {
-			// If errorCount is more than 0, error out
-			console.error('Please fill in all fields');
-		}
-	},
-	render: function() {
-		var formReturn = (
-			React.createElement("div", {className: "form-group col-xs-12 col-sm-12"}, 
-				React.createElement("div", {id: "addOrderInfo", className: "panel panel-default"}, 
-					React.createElement("div", {className: "panel-heading"}, "Create new Order"), 
-					React.createElement("fieldset", null, 
-						React.createElement("div", {className: "row col-xs-6 col-sm-6"}, 
-			        React.createElement("div", {className: "input-group col-xs-12 col-sm-12"}, 
-							  React.createElement("span", {className: "input-group-addon"}, "Shop Name"), 
-							  React.createElement("input", {id: "inputShopName", className: "form-control", type: "text", placeholder: "shopname"})
-							), 
-			        React.createElement("div", {className: "input-group col-xs-12 col-sm-12"}, 
-							  React.createElement("span", {className: "input-group-addon"}, "Order Status"), 
-							  React.createElement("select", {id: "inputOrderStatus", className: "form-control"}, 
-								
-									this.state.orderStatusList.map(function(orderStatus) {
-										return (React.createElement("option", {key: 'orderStatus-' + orderStatus.key, value: orderStatus.key}, orderStatus.content))
-									})
-								
-								)
-							)
-						), 
-
-						React.createElement("div", {className: "row col-xs-6 col-sm-6"}, 
-			        React.createElement("div", {className: "input-group col-xs-12 col-sm-12"}, 
-							  React.createElement("span", {className: "input-group-addon"}, "Customer Name"), 
-							  React.createElement("input", {id: "inputCustomerName", className: "form-control", type: "text", placeholder: "customername"})
-							), 
-			        React.createElement("div", {className: "input-group col-xs-12 col-sm-12"}, 
-							  React.createElement("span", {className: "input-group-addon"}, "Customer Phone"), 
-							  React.createElement("input", {id: "inputCustomerPhone", className: "form-control", type: "text", placeholder: "customerphone"})
-							)
-						), 
-
-						React.createElement("div", {className: "row col-xs-6 col-sm-6"}, 
-			        React.createElement("div", {className: "input-group col-xs-12 col-sm-12"}, 
-							  React.createElement("span", {className: "input-group-addon"}, "Order Date"), 
-								React.createElement("input", {id: "inputOrderDate", className: "form-control", type: "text"})
-							), 
-			        React.createElement("div", {className: "input-group col-xs-12 col-sm-12"}, 
-							  React.createElement("span", {className: "input-group-addon"}, "Billing Date"), 
-							  React.createElement("input", {id: "inputBillingDate", className: "form-control", type: "text"})
-							)
-						), 
-
-						React.createElement("div", {className: "row col-xs-6 col-sm-6"}, 
-			        React.createElement("div", {className: "input-group col-xs-12 col-sm-12"}, 
-							  React.createElement("span", {className: "input-group-addon"}, "Customer Address"), 
-							  React.createElement("input", {id: "inputCustomerAddress", className: "form-control", type: "text", placeholder: "customeraddress"})
-							), 
-			        React.createElement("div", {className: "input-group col-xs-12 col-sm-12"}, 
-							  React.createElement("span", {className: "input-group-addon"}, "Customer Note"), 
-							  React.createElement("input", {id: "inputCustomerNote", className: "form-control", type: "text", placeholder: "customernote"})
-							)
-						)
-						
-					)
-				), 
-				React.createElement("div", {id: "newOrderItemList", className: "panel panel-default"}, 
-					React.createElement("div", {className: "panel-heading"}, "Add new OrderItem"), 
-					React.createElement("table", {className: "table table-bordered table-striped menu-items"}, 
-						React.createElement("thead", null, 
-							React.createElement("tr", null, 
-								React.createElement("th", null, "No."), 
-								React.createElement("th", null, "Category"), 
-								React.createElement("th", null, "Product"), 
-								React.createElement("th", null, "Quatity"), 
-								React.createElement("th", null, "Price in"), 
-								React.createElement("th", null, "Amount"), 
-								React.createElement("th", null, "Provider"), 
-								React.createElement("th", null, "Note"), 
-								React.createElement("th", null, "Delete?")
-							)
-						), 
-						React.createElement("tbody", null, 
-						
-							this.state.orderItemList.map(function(order, index) {
-								return (
-									React.createElement("tr", {key: 'tr' + index}, 
-										React.createElement("th", null, index + 1), 
-										React.createElement("td", null, React.createElement("a", {href: "#", rel: index}, "Get category")), 
-										React.createElement("td", null, React.createElement("a", {href: "#"}, "Get product from category")), 
-										React.createElement("td", null, React.createElement("input", {type: "text", placeholder: "quatity"})), 
-										React.createElement("td", null, "Get product.price"), 
-										React.createElement("td", null, "Calc amount"), 
-										React.createElement("td", null, React.createElement("input", {type: "text", placeholder: "provider"})), 
-										React.createElement("td", null, React.createElement("input", {type: "text", placeholder: "note"})), 
-										React.createElement("td", null, React.createElement("a", {href: "#", rel: index, onClick: this.pullOrderItem}, "delete"))
-									)
-								)
-							}, this)
-						
-						)
-					), 
-					React.createElement("button", {id: "btnPushOrderItem", className: "btn btn-primary col-xs-12 col-sm-12", onClick: this.pushOrderItem}, "Add Order Item")
-				), 
-				React.createElement("div", {id: "addOrder", className: "panel panel-default"}, 
-					React.createElement("button", {id: "btnAddOrder", className: "btn btn-primary col-xs-6 col-sm-6", onClick: this.addOrder}, "Save")
-				)
-			)
-		);
-
-		return formReturn;
-	}
-});
-
 },{"react":156}],169:[function(require,module,exports){
 var React = require('react');
-var OrderOutItemRow = require('./../components/OrderOutItemRow.jsx');
+var InputElm = require('./../components/InputElement.jsx');
+var DropDownList = require('./../components/DropDownList.jsx');
+var OrderExportItemList = require('./../components/OrderExportItemList.jsx');
 
 module.exports = React.createClass({displayName: "exports",
 	getInitialState: function() {
-
-		// Define Order status
-		var orderStatus = [
-			{
-				key: 'opening',
-				content: 'Opening'
-			},
-			{
-				key: 'processing',
-				content: 'Processing'
-			},
-			{
-				key: 'finish',
-				content: 'Finish'
-			},
-			{
-				key: 'depending',
-				content: 'Depending'
-			},
-			{
-				key: 'fail',
-				content: 'Fail'
-			}
-		];
-
 		return ({
 			orderItemList: [],
-			orderStatusList: orderStatus,
 			currentOrder: {
 				orderstatus: 'opening',
 				orderdate: new Date().toISOString(),
@@ -21041,20 +20474,35 @@ module.exports = React.createClass({displayName: "exports",
 			}
 		});
 	},
+	getOrderStatusList: function() {
+		// Define Order status
+		var orderStatus = [
+			{
+				key: 'opening',
+				value: 'Opening'
+			},
+			{
+				key: 'processing',
+				value: 'Processing'
+			},
+			{
+				key: 'finish',
+				value: 'Finish'
+			},
+			{
+				key: 'depending',
+				value: 'Depending'
+			},
+			{
+				key: 'fail',
+				value: 'Fail'
+			}
+		];
+		return orderStatus;
+	},
 	componentDidMount: function() {
 		$('#inputOrderDate').datetimepicker();
 		$('#inputBillingDate').datetimepicker();
-	},
-	createNewOrderItem: function() {
-		// Define structure orderItem
-		var _orderItemDefault = {
-			productid: '',
-			quantity: 0,
-			price: 0,
-			coupon: 0,
-			amount: 0
-		};
-		return _orderItemDefault;
 	},
 	getProductList: function() {
 		// Request get orders list
@@ -21071,38 +20519,33 @@ module.exports = React.createClass({displayName: "exports",
 			}.bind(this)
 		});
 	},
-	pushOrderItem: function(e) {
-		e.preventDefault();
-
-		var newOrderItem = this.createNewOrderItem();
-
+	pushOrderItem: function(newOrderItem) {
 		// Push new orderItem to orderItemList
 		var newOrderItemListData = this.state.orderItemList.concat(newOrderItem);
 		this.setState({orderItemList: newOrderItemListData});
 	},
-	pullOrderItem: function(that) {
+	pullOrderItem: function(index) {
 
-		var rowData = that.props.dataRow;
-		var isEmpty = true;
+		// var rowData = that.props.dataRow;
+		// var isEmpty = true;
 
-		var orderItemDefault = this.createNewOrderItem();
+		// var orderItemDefault = this.createNewOrderItem();
 
 		// Check orderItem was remove is exist and not null
-		for(var property in orderItemDefault) {
-			if(orderItemDefault.hasOwnProperty(property)) {
-				if(rowData[property] !== '' && rowData[property] !== 0) {
-					isEmpty = false;
-				}
-			}
-		}
+		// for(var property in orderItemDefault) {
+		// 	if(orderItemDefault.hasOwnProperty(property)) {
+		// 		if(rowData[property] !== '' && rowData[property] !== 0) {
+		// 			isEmpty = false;
+		// 		}
+		// 	}
+		// }
 
 		// If not null then Confirm remove
-		var comfirmination = !isEmpty ? confirm('Are you sure?') : true;
+		// var comfirmination = !isEmpty ? confirm('Are you sure?') : true;
 		
 		// If accept remove
-		if(comfirmination) {
-
-			var index = this.state.orderItemList.indexOf(rowData);
+		// if(comfirmination) {
+			// var index = this.state.orderItemList.indexOf(rowData);
 			var newOrderItemList = this.state.orderItemList;
 			
 			newOrderItemList.splice(index, 1);
@@ -21110,8 +20553,7 @@ module.exports = React.createClass({displayName: "exports",
 			// var node = that.getDOMNode();
 			// React.unmountComponentAtNode(node);
 			// $(node).remove();
-
-		}
+		// }
 	},
 	addOrder: function(e) {
 		e.preventDefault();
@@ -21186,93 +20628,42 @@ module.exports = React.createClass({displayName: "exports",
 			console.error('Please fill in all fields');
 		}
 	},
+	onChangeStatus: function(status) {
+		console.log('onChangeStatus()');
+	},
 	render: function() {
 		var formReturn = (
 			React.createElement("div", {className: "form-group col-xs-12 col-sm-12"}, 
-				React.createElement("div", {id: "addOrderInfo", className: "panel panel-default"}, 
-					React.createElement("div", {className: "panel-heading"}, "Create new Order"), 
+				React.createElement("div", {className: "panel panel-default"}, 
+					React.createElement("div", {className: "panel-heading heading-button"}, 
+						React.createElement("span", null, "Create new Order"), 
+						React.createElement("button", {ref: "btnAddOrder", className: "btn btn-primary col-xs-2 col-sm-2 pull-right", onClick: this.addOrder}, "Save")
+					), 
 					React.createElement("fieldset", null, 
-						React.createElement("div", {className: "row col-xs-6 col-sm-6"}, 
-		        			React.createElement("div", {className: "input-group col-xs-12 col-sm-12"}, 
-							  React.createElement("span", {className: "input-group-addon"}, "Shop Name"), 
-							  React.createElement("input", {id: "inputShopName", className: "form-control", type: "text", placeholder: "shopname"})
+							React.createElement(InputElm, {ref: "inputShopName", position: "pull-left", title: "Shop Name", placeholder: "shopname"}), 
+							React.createElement(InputElm, {ref: "inputCustomerName", position: "pull-right", title: "Customer Name", placeholder: "customername"}), 
+							
+							React.createElement("div", {className: "input-group col-xs-6 col-sm-6 pull-left"}, 
+								React.createElement("span", {className: "input-group-addon w20"}, "Order Status"), 
+								React.createElement(DropDownList, {
+									dataList: this.getOrderStatusList(), 
+									onChangeData: this.onChangeStatus})
 							), 
-			        		React.createElement("div", {className: "input-group col-xs-12 col-sm-12"}, 
-							  React.createElement("span", {className: "input-group-addon"}, "Order Status"), 
-							  React.createElement("select", {id: "inputOrderStatus", className: "form-control"}, 
-								
-									this.state.orderStatusList.map(function(orderStatus) {
-										return (React.createElement("option", {key: 'orderStatus-' + orderStatus.key, value: orderStatus.key}, orderStatus.content))
-									})
-								
-								)
-							)
-						), 
+							React.createElement(InputElm, {ref: "inputCustomerPhone", position: "pull-right", title: "Customer Phone", placeholder: "customerphone"}), 
 
-						React.createElement("div", {className: "row col-xs-6 col-sm-6"}, 
-			        		React.createElement("div", {className: "input-group col-xs-12 col-sm-12"}, 
-							  React.createElement("span", {className: "input-group-addon"}, "Customer Name"), 
-							  React.createElement("input", {id: "inputCustomerName", className: "form-control", type: "text", placeholder: "customername"})
-							), 
-			       			React.createElement("div", {className: "input-group col-xs-12 col-sm-12"}, 
-							  React.createElement("span", {className: "input-group-addon"}, "Customer Phone"), 
-							  React.createElement("input", {id: "inputCustomerPhone", className: "form-control", type: "text", placeholder: "customerphone"})
-							)
-						), 
+							React.createElement(InputElm, {ref: "inputOrderDate", position: "pull-left", title: "Order Date", placeholder: ""}), 
+							React.createElement(InputElm, {ref: "inputCustomerAddress", position: "pull-right", title: "Customer Address", placeholder: "customeraddress"}), 
 
-						React.createElement("div", {className: "row col-xs-6 col-sm-6"}, 
-			        		React.createElement("div", {className: "input-group col-xs-12 col-sm-12"}, 
-							  React.createElement("span", {className: "input-group-addon"}, "Order Date"), 
-								React.createElement("input", {id: "inputOrderDate", className: "form-control", type: "text"})
-							), 
-			       			 React.createElement("div", {className: "input-group col-xs-12 col-sm-12"}, 
-							  React.createElement("span", {className: "input-group-addon"}, "Billing Date"), 
-							  React.createElement("input", {id: "inputBillingDate", className: "form-control", type: "text"})
-							)
-						), 
-
-						React.createElement("div", {className: "row col-xs-6 col-sm-6"}, 
-			       	 		React.createElement("div", {className: "input-group col-xs-12 col-sm-12"}, 
-							  React.createElement("span", {className: "input-group-addon"}, "Customer Address"), 
-							  React.createElement("input", {id: "inputCustomerAddress", className: "form-control", type: "text", placeholder: "customeraddress"})
-							), 
-			        		React.createElement("div", {className: "input-group col-xs-12 col-sm-12"}, 
-							  React.createElement("span", {className: "input-group-addon"}, "Customer Note"), 
-							  React.createElement("input", {id: "inputCustomerNote", className: "form-control", type: "text", placeholder: "customernote"})
-							)
-						)
-						
+							React.createElement(InputElm, {ref: "inputBillingDate", position: "pull-left", title: "Billing Date", placeholder: ""}), 
+							React.createElement(InputElm, {ref: "inputCustomerNote", position: "pull-right", title: "Customer Note", placeholder: "customernote"})
 					)
 				), 
-				React.createElement("div", {id: "newOrderItemList", className: "panel panel-default"}, 
-					React.createElement("div", {className: "panel-heading"}, "Add new OrderItem"), 
-					React.createElement("table", {className: "table table-bordered table-striped menu-items"}, 
-						React.createElement("thead", null, 
-							React.createElement("tr", null, 
-								React.createElement("th", null, "No."), 
-								React.createElement("th", null, "Category"), 
-								React.createElement("th", null, "Product"), 
-								React.createElement("th", null, "Quatity"), 
-								React.createElement("th", null, "Price out"), 
-								React.createElement("th", null, "Amount"), 
-								React.createElement("th", null, "Provider"), 
-								React.createElement("th", null, "Note"), 
-								React.createElement("th", null, "Delete?")
-							)
-						), 
-						React.createElement("tbody", null, 
-						
-							this.state.orderItemList.map(function(orderItem, index) {
-								return (React.createElement(OrderOutItemRow, {key: 'row-' + index, index: index, dataRowList: this.state.orderItemList, dataRow: orderItem, deleteRow: this.pullOrderItem}))
-							}, this)
-						
-						)
-					), 
-					React.createElement("button", {id: "btnPushOrderItem", className: "btn btn-primary col-xs-12 col-sm-12", onClick: this.pushOrderItem}, "Add Order Item")
-				), 
-				React.createElement("div", {id: "addOrder", className: "panel panel-default"}, 
-					React.createElement("button", {id: "btnAddOrder", className: "btn btn-primary col-xs-6 col-sm-6", onClick: this.addOrder}, "Save")
-				)
+
+				React.createElement(OrderExportItemList, {
+					orderItemList: this.state.orderItemList, 
+					pushOrderItem: this.pushOrderItem, 
+					pullOrderItem: this.pullOrderItem})
+				
 			)
 		);
 
@@ -21280,7 +20671,35 @@ module.exports = React.createClass({displayName: "exports",
 	}
 });
 
-},{"./../components/OrderOutItemRow.jsx":160,"react":156}],170:[function(require,module,exports){
+},{"./../components/DropDownList.jsx":158,"./../components/InputElement.jsx":159,"./../components/OrderExportItemList.jsx":161,"react":156}],170:[function(require,module,exports){
+var React = require('react');
+
+module.exports = React.createClass({displayName: "exports",
+  getInitialState: function() {
+  },
+  componentDidMount: function() {
+  },
+  render: function() {
+  	var formReturn = (React.createElement("h1", null, "Hi"));
+    return formReturn;
+  }
+});
+
+},{"react":156}],171:[function(require,module,exports){
+var React = require('react');
+
+module.exports = React.createClass({displayName: "exports",
+	getInitialState: function() {
+	},
+	componentDidMount: function() {
+	},
+	render: function() {
+		var formReturn = (React.createElement("h1", null, "Hi"));
+		return formReturn;
+	}
+});
+
+},{"react":156}],172:[function(require,module,exports){
 var React = require('react');
 var ProductList = require('./../components/ProductList.jsx');
 var ProductAdding = require('./../components/ProductAdding.jsx');
@@ -21325,53 +20744,49 @@ module.exports = React.createClass({displayName: "exports",
 	},
 	createPagination: function() {
 		// Get data to create pagination
-		var pages = this.getTotalPage();
-
-		var current = this.state.currentPage,
-				pagesData = [];
-
-		for (var pageIndex = 1; pageIndex <= pages; pageIndex++) {
-			if (pageIndex >= 1 && pageIndex <= pages) {
-				pagesData.push([pageIndex, pageIndex]);
-			}
-		}
-
-		// leading arrows
-		// if (current > 2) {
-		// 	pagesData.push([1, "<<"]);
-		// }
-		// if (current > 1) {
-		// 	pagesData.push([current - 1, "<"]);
-		// }
-
-		// for (var pageIndex = current - 2; pageIndex < current + 4; pageIndex++) {
-		// 	if (pageIndex >= 1 && pageIndex <= pages) {
-		// 		pagesData.push([pageIndex, pageIndex]);
-		// 	}
-		// }
-
-		// // tailing arrows
-		// if (current + 1 <= pages) {
-		// 	pagesData.push([current + 1, ">"]);
-		// }
-		// if (current + 2 <= pages) {
-		// 	pagesData.push([pages, ">>"]);
-		// }
-
-		this.setState({pages: pagesData});
-	},
-	getTotalPage: function() {
 		// Request get count
 		$.ajax({
 			type: 'GET',
 			dataType: 'json',
 			url: '/api/products/count',
 			cache: false,
-			success: function(total) {
-				// Get pages
-				var pages = Math.floor(total / this.state.productsPerPage);
-				pages += (total % this.state.productsPerPage > 0) ? 1 : 0;
-				return pages;
+			success: function(totalProduct) {
+				// Get totalPage
+				var totalPage = Math.floor(totalProduct / this.state.productsPerPage);
+				totalPage += (totalProduct % this.state.productsPerPage > 0) ? 1 : 0;
+
+				var current = this.state.currentPage,
+						pagesData = [];
+
+				for (var pageIndex = 1; pageIndex <= totalPage; pageIndex++) {
+					if (pageIndex >= 1 && pageIndex <= totalPage) {
+						pagesData.push([pageIndex, pageIndex]);
+					}
+				}
+
+				// leading arrows
+				// if (current > 2) {
+				// 	pagesData.push([1, "<<"]);
+				// }
+				// if (current > 1) {
+				// 	pagesData.push([current - 1, "<"]);
+				// }
+
+				// for (var pageIndex = current - 2; pageIndex < current + 4; pageIndex++) {
+				// 	if (pageIndex >= 1 && pageIndex <= totalPage) {
+				// 		pagesData.push([pageIndex, pageIndex]);
+				// 	}
+				// }
+
+				// // tailing arrows
+				// if (current + 1 <= totalPage) {
+				// 	pagesData.push([current + 1, ">"]);
+				// }
+				// if (current + 2 <= totalPage) {
+				// 	pagesData.push([totalPage, ">>"]);
+				// }
+
+				this.setState({pages: pagesData});
 			}.bind(this),
 			error: function(xhr, status, err) {
 				console.error('/api/products/count', status, err.toString());
@@ -21457,28 +20872,31 @@ module.exports = React.createClass({displayName: "exports",
 			{ key: 25, value: 25 }
 		];
 		var formReturn = (
-			React.createElement("div", {className: "form-group col-xs-12 col-sm-6"}, 
-
-				React.createElement(ProductList, {
-					productListData: this.state.productListData, 
-					showProductInfo: this.changeProductInfo, 
-					deleteCallback: this.removeProductFromList}), 
-
-				React.createElement(DropDownList, {
-					dataList: pageSizes, 
-					onChangeData: this.changeProductsPerPage}), 
-				
-				React.createElement(Pagination, {
-					pages: this.state.pages, 
-					currentPage: this.state.currentPage, 
-					moveToPage: this.moveToPage}), 
-
-				React.createElement(ProductAdding, {
-					productInfo: this.state.productInfo, 
-					updateCallback: this.updateProductToList, 
-					addCallback: this.addProductToList, 
-					cancel: this.cancel})
-
+			React.createElement("div", {className: "col-xs-12 col-sm-12"}, 
+				React.createElement("div", {className: "row col-xs-6 col-sm-6 pull-left"}, 
+					React.createElement(ProductList, {
+						productListData: this.state.productListData, 
+						showProductInfo: this.changeProductInfo, 
+						deleteCallback: this.removeProductFromList}), 
+					React.createElement("div", {className: "row"}, 
+						React.createElement("div", {className: "col-sm-3 pull-right"}, 
+							React.createElement(DropDownList, {
+								dataList: pageSizes, 
+								onChangeData: this.changeProductsPerPage})
+						)
+					), 
+					React.createElement(Pagination, {
+						pages: this.state.pages, 
+						currentPage: this.state.currentPage, 
+						moveToPage: this.moveToPage})
+				), 
+				React.createElement("div", {className: "row col-xs-6 col-sm-6 pull-right"}, 
+					React.createElement(ProductAdding, {
+						productInfo: this.state.productInfo, 
+						updateCallback: this.updateProductToList, 
+						addCallback: this.addProductToList, 
+						cancel: this.cancel})
+				)
 			)
 		);
 
@@ -21486,4 +20904,4 @@ module.exports = React.createClass({displayName: "exports",
 	}
 });
 
-},{"./../components/DropDownList.jsx":158,"./../components/Pagination.jsx":161,"./../components/ProductAdding.jsx":163,"./../components/ProductList.jsx":164,"react":156}]},{},[157]);
+},{"./../components/DropDownList.jsx":158,"./../components/Pagination.jsx":163,"./../components/ProductAdding.jsx":165,"./../components/ProductList.jsx":166,"react":156}]},{},[157]);

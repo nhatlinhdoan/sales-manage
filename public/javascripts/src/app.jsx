@@ -3,37 +3,37 @@ var React 			  = require('react'),
 		AboutForm 	  = require('./forms/AboutForm.jsx'),
 		ProductForm   = require('./forms/ProductForm.jsx'),
 		OrderForm 	  = require('./forms/OrderForm.jsx'),
-		OrderInForm   = require('./forms/OrderInForm.jsx'),
-		OrderOutForm  = require('./forms/OrderOutForm.jsx');
+		OrderInForm   = require('./forms/OrderImportForm.jsx'),
+		OrderOutForm  = require('./forms/OrderExportForm.jsx');
 
 var MyApp = React.createClass({
 	getInitialState: function() {
 		var _tabListData = [
-      {
-        key: 'Home',
-        content: '<ProductForm />'
-      },
-      {
-        key: 'Products',
-        content: '<ProductForm />'
-      },
-      {
-        key: 'Orders',
-        content: '<OrderForm />'
-      },
-      {
-        key: 'About',
-        content: '<AboutForm />'
-      },
-    ];
+			{
+				key: 'Home',
+				content: '<ProductForm />'
+			},
+			{
+				key: 'Products',
+				content: '<ProductForm />'
+			},
+			{
+				key: 'Orders',
+				content: '<OrderForm />'
+			},
+			{
+				key: 'About',
+				content: '<AboutForm />'
+			},
+		];
 		return ({
-			currentTab: 'Orders',
+			currentTab: 'Home',
 			tabListData: _tabListData
 		});
 	},
 	changeTab: function(tabKey) {
 		var checkTabKey = this.state.tabListData.map(function (tab) {
-		   return tab.key === tabKey;
+			 return tab.key === tabKey;
 		});
 		if(checkTabKey) {
 			this.setState({currentTab: tabKey});

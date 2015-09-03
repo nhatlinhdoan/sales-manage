@@ -5,25 +5,29 @@ module.exports = React.createClass({
 		dataList: React.PropTypes.array,
 		onChangeData: React.PropTypes.func
 	},
+	getDefaultProps: function() {
+		return {
+			_key: 'key',
+			_value: 'value'
+		}
+	},
 	onChangeData: function(e) {
 		e.preventDefault();
 
-		var number = e.target.value;
-		this.props.onChangeData(number);
+		var value = e.target.value;
+		this.props.onChangeData(value);
 	},
 	render: function() {
+		var propKey = this.props._key;
+		var propValue = this.props._value;
 		return (
-			<div className='row'>
-				<div className='col-sm-3'>
-					<select className="form-control" onChange={this.onChangeData}>
-					{
-						this.props.dataList.map(function(data) {
-							return (<option key={'opt-'+data.key} value={data.key}>{data.value}</option>)
-						})
-					}
-					</select>
-				</div>
-			</div>
+			<select className="form-control" onChange={this.onChangeData}>
+			{
+				this.props.dataList.map(function(data) {
+					return (<option key={'opt-'+data[propKey]} value={data[propKey]}>{data[propValue]}</option>)
+				})
+			}
+			</select>
 		);
 	}
 });

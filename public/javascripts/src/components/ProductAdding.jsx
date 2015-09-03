@@ -1,8 +1,10 @@
 var React = require('react');
+var InputElm = require('./../components/InputElement.jsx');
+var DropDownList = require('./../components/DropDownList.jsx');
 
 module.exports = React.createClass({
 	shouldComponentUpdate: function(nextProps, nextState) {
-	  return nextProps.productInfo !== this.props.productInfo;
+		return nextProps.productInfo !== this.props.productInfo;
 	},
 	componentDidUpdate: function() {
 		if(this.props.productInfo !== '') {
@@ -110,6 +112,18 @@ module.exports = React.createClass({
 
 		this.props.cancel();
 	},
+	getCategoryList: function() {
+		// hard code
+		var _categoryList = [
+			{ key: '', value: '--- Choose ---' },
+			{ key: 'Ram', value: 'Ram' },
+			{ key: 'CPU', value: 'CPU' },
+			{ key: 'Pan', value: 'Pan' },
+			{ key: 'Mouse', value: 'Mouse' },
+			{ key: 'Keyboard', value: 'Keyboard' }
+		];
+		return _categoryList;
+	},
 	render: function() {
 		return (
 			<div id='addProduct' className="panel panel-default">
@@ -117,12 +131,13 @@ module.exports = React.createClass({
 					{ this.props.productInfo === '' ? 'Add Product' : 'Update Product' }
 				</div>
 				<fieldset>
-					<input id='inputCategory' className="col-xs-6 col-sm-6" type='text' placeholder='category'/>
-					<input id='inputProductName' className="col-xs-6 col-sm-6" type='text' placeholder='productname'/>
-					<br/>
-					<input id='inputPrice' className="col-xs-6 col-sm-6" type='number' placeholder='price'/>
-					<input id='inputQuatity' className="col-xs-6 col-sm-6" type='number' placeholder='quatity'/>
-					<br/>
+					<div className='input-group col-xs-6 col-sm-6 pull-left'>
+						<span className='input-group-addon w20'>Category</span>
+						<DropDownList dataList={this.getCategoryList()}/>
+					</div>
+					<InputElm ref='inputProductName' title='Product name' position='pull-right' placeholder='productname'/>
+					<InputElm ref='inputPrice' title='Price' position='pull-left' placeholder='price'/>
+					<InputElm ref='inputQuatity' title='Quatity' position='pull-right' placeholder='quatity'/>
 					{
 						this.props.productInfo ?  
 							<button id='btnUpdateProduct' className="btn btn-primary col-xs-6 col-sm-6" onClick={this.updateProduct}>Update</button> 

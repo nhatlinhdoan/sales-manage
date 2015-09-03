@@ -42,53 +42,49 @@ module.exports = React.createClass({
 	},
 	createPagination: function() {
 		// Get data to create pagination
-		var pages = this.getTotalPage();
-
-		var current = this.state.currentPage,
-				pagesData = [];
-
-		for (var pageIndex = 1; pageIndex <= pages; pageIndex++) {
-			if (pageIndex >= 1 && pageIndex <= pages) {
-				pagesData.push([pageIndex, pageIndex]);
-			}
-		}
-
-		// leading arrows
-		// if (current > 2) {
-		// 	pagesData.push([1, "<<"]);
-		// }
-		// if (current > 1) {
-		// 	pagesData.push([current - 1, "<"]);
-		// }
-
-		// for (var pageIndex = current - 2; pageIndex < current + 4; pageIndex++) {
-		// 	if (pageIndex >= 1 && pageIndex <= pages) {
-		// 		pagesData.push([pageIndex, pageIndex]);
-		// 	}
-		// }
-
-		// // tailing arrows
-		// if (current + 1 <= pages) {
-		// 	pagesData.push([current + 1, ">"]);
-		// }
-		// if (current + 2 <= pages) {
-		// 	pagesData.push([pages, ">>"]);
-		// }
-
-		this.setState({pages: pagesData});
-	},
-	getTotalPage: function() {
 		// Request get count
 		$.ajax({
 			type: 'GET',
 			dataType: 'json',
 			url: '/api/products/count',
 			cache: false,
-			success: function(total) {
-				// Get pages
-				var pages = Math.floor(total / this.state.productsPerPage);
-				pages += (total % this.state.productsPerPage > 0) ? 1 : 0;
-				return pages;
+			success: function(totalProduct) {
+				// Get totalPage
+				var totalPage = Math.floor(totalProduct / this.state.productsPerPage);
+				totalPage += (totalProduct % this.state.productsPerPage > 0) ? 1 : 0;
+
+				var current = this.state.currentPage,
+						pagesData = [];
+
+				for (var pageIndex = 1; pageIndex <= totalPage; pageIndex++) {
+					if (pageIndex >= 1 && pageIndex <= totalPage) {
+						pagesData.push([pageIndex, pageIndex]);
+					}
+				}
+
+				// leading arrows
+				// if (current > 2) {
+				// 	pagesData.push([1, "<<"]);
+				// }
+				// if (current > 1) {
+				// 	pagesData.push([current - 1, "<"]);
+				// }
+
+				// for (var pageIndex = current - 2; pageIndex < current + 4; pageIndex++) {
+				// 	if (pageIndex >= 1 && pageIndex <= totalPage) {
+				// 		pagesData.push([pageIndex, pageIndex]);
+				// 	}
+				// }
+
+				// // tailing arrows
+				// if (current + 1 <= totalPage) {
+				// 	pagesData.push([current + 1, ">"]);
+				// }
+				// if (current + 2 <= totalPage) {
+				// 	pagesData.push([totalPage, ">>"]);
+				// }
+
+				this.setState({pages: pagesData});
 			}.bind(this),
 			error: function(xhr, status, err) {
 				console.error('/api/products/count', status, err.toString());
@@ -174,28 +170,31 @@ module.exports = React.createClass({
 			{ key: 25, value: 25 }
 		];
 		var formReturn = (
-			<div className="form-group col-xs-12 col-sm-6">
-
-				<ProductList 
-					productListData={this.state.productListData}
-					showProductInfo={this.changeProductInfo}
-					deleteCallback={this.removeProductFromList}/>
-
-				<DropDownList 
-					dataList={pageSizes} 
-					onChangeData={this.changeProductsPerPage}/>
-				
-				<Pagination 
-					pages={this.state.pages} 
-					currentPage={this.state.currentPage} 
-					moveToPage={this.moveToPage}/>
-
-				<ProductAdding 
-					productInfo={this.state.productInfo} 
-					updateCallback={this.updateProductToList}
-					addCallback={this.addProductToList}
-					cancel={this.cancel}/>
-
+			<div className='col-xs-12 col-sm-12'>
+				<div className='row col-xs-6 col-sm-6 pull-left'>
+					<ProductList 
+						productListData={this.state.productListData}
+						showProductInfo={this.changeProductInfo}
+						deleteCallback={this.removeProductFromList}/>
+					<div className='row'>
+						<div className='col-sm-3 pull-right'>
+							<DropDownList 
+								dataList={pageSizes} 
+								onChangeData={this.changeProductsPerPage}/>
+						</div>
+					</div>
+					<Pagination 
+						pages={this.state.pages} 
+						currentPage={this.state.currentPage} 
+						moveToPage={this.moveToPage}/>
+				</div>
+				<div className='row col-xs-6 col-sm-6 pull-right'>
+					<ProductAdding 
+						productInfo={this.state.productInfo} 
+						updateCallback={this.updateProductToList}
+						addCallback={this.addProductToList}
+						cancel={this.cancel}/>
+				</div>
 			</div>
 		);
 

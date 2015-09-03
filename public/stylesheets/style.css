@@ -2,7 +2,15 @@ body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
-
 a {
   color: #00B7FF;
+}
+.w20 {
+	width: 20%;
+}
+.heading-button {
+	padding: 0;
+	padding-left: 15px;
+	height: 36px;
+	line-height: 36px;
 }
