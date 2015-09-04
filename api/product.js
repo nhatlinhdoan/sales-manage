@@ -17,7 +17,7 @@ router.route('/cat/:category')
 	.get(function(req, res, next) {
 
 		// Get product by category
-		console.log('Call to GetbyCategory API ' + req.params.category);
+		console.log('API: Get Product list by Category ' + req.params.category);
 
 		var Product = mongoose.model('Product');
 
@@ -41,7 +41,7 @@ router.route('/cat/:category')
 router.route('/:skip/:limit')
 	.get(function(req, res, next) {
 
-		console.log('Call to API Get productList with limit');
+		console.log('API: Get Product list with limit');
 
 		var _limit = parseInt(req.params.limit),
 				_skip = parseInt(req.params.skip);
@@ -73,7 +73,7 @@ router.route('/:skip/:limit')
 router.route('/')
 	.get(function(req, res, next) {
 
-		console.log('Call to API Get all product');
+		console.log('API: Get all product in store');
 
 		var Product = mongoose.model('Product');
 
@@ -248,7 +248,7 @@ router.param('id', function(req, res, next, id) {
 router.route('/:id')
 	.get(function(req, res, next) {
 		// Get product by id
-		console.log('Call to GetbyId API');
+		console.log('API: Get Product by Id ' + req.id);
 
 		mongoose.model('Product').findById(req.id, function(err, product) {
 			if(err) {
@@ -269,7 +269,7 @@ router.route('/:id')
 	})
 	.delete(function(req, res, next) {
 		// delete product
-		console.log('Call to Delete API');
+		console.log('API: Delete Product ' + req.id);
 		
 		mongoose.model('Product').findByIdAndRemove(req.id, function(err, product) {
 			if(err) {

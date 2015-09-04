@@ -13,7 +13,6 @@ module.exports = React.createClass({
 	},
 	onChangeData: function(e) {
 		e.preventDefault();
-
 		var value = e.target.value;
 		this.props.onChangeData(value);
 	},
@@ -21,7 +20,8 @@ module.exports = React.createClass({
 		var propKey = this.props._key;
 		var propValue = this.props._value;
 		return (
-			<select className="form-control" onChange={this.onChangeData}>
+			<select className="form-control" ref={this.props.ref}
+							value={this.props.value} onChange={this.onChangeData}>
 			{
 				this.props.dataList.map(function(data) {
 					return (<option key={'opt-'+data[propKey]} value={data[propKey]}>{data[propValue]}</option>)

@@ -152,14 +152,17 @@ module.exports = React.createClass({
 		}
 	},
 	moveToPage: function(pageIndex) {
-		// Options default
-		var limit = this.state.productsPerPage,
-				skip  = limit * (pageIndex - 1);
+		if(this.state.currentPage !== pageIndex) {
+			this.setState({currentPage: pageIndex});
+			
+			// Options default
+			var limit = this.state.productsPerPage,
+					skip  = limit * (pageIndex - 1);
 
-		// Update data list
-		this.getProductList(skip, limit);
-		this.createPagination();
-		this.setState({currentPage: pageIndex});	
+			// Update data list
+			this.getProductList(skip, limit);
+			this.createPagination();
+		}
 	},
 	render: function() {
 		var pageSizes = [
@@ -191,8 +194,8 @@ module.exports = React.createClass({
 				<div className='row col-xs-6 col-sm-6 pull-right'>
 					<ProductAdding 
 						productInfo={this.state.productInfo} 
-						updateCallback={this.updateProductToList}
-						addCallback={this.addProductToList}
+						updateCallback={this.updateProductToList} 
+						addCallback={this.addProductToList} 
 						cancel={this.cancel}/>
 				</div>
 			</div>

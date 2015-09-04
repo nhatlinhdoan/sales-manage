@@ -1,17 +1,27 @@
-var React = require('react');
+var React = require('react/addons');
 var InputElm = require('./../components/InputElement.jsx');
 var DropDownList = require('./../components/DropDownList.jsx');
 
 module.exports = React.createClass({
-	shouldComponentUpdate: function(nextProps, nextState) {
-		return nextProps.productInfo !== this.props.productInfo;
+	mixins: [React.addons.LinkedStateMixin],
+	getInitialState: function() {
+		return {
+			category: '',
+			productname: '',
+			price: 0,
+			quatity: 0
+		}
 	},
-	componentDidUpdate: function() {
-		if(this.props.productInfo !== '') {
+	componentWillReceiveProps: function(nextProps) {
+		if(nextProps.productInfo !== '' && nextProps.productInfo !== this.props.productInfo) {
+			console.log('componentWillReceiveProps');
 			// Fill data to input form
-			$('#addProduct fieldset input#inputCategory').val(this.props.productInfo.category);
-			$('#addProduct fieldset input#inputProductName').val(this.props.productInfo.productname);
-			$('#addProduct fieldset input#inputPrice').val(this.props.productInfo.price);
+			var updateState = {
+				category: nextProps.productInfo.category,
+				productname: nextProps.productInfo.productname,
+				price: nextProps.productInfo.price
+			}
+			this.setState(updateState);
 		}
 	},
 	addProduct: function(e) {
@@ -27,10 +37,10 @@ module.exports = React.createClass({
 		if(errorCount === 0) {
 			// If it is, compile all product info into one object
 			var newProduct = {
-				category: $('#addProduct fieldset input#inputCategory').val(),
-				productname: $('#addProduct fieldset input#inputProductName').val(),
-				price: $('#addProduct fieldset input#inputPrice').val(),
-				quatity: $('#addProduct fieldset input#inputQuatity').val()
+				'category': this.state.category,
+				'productname': this.state.productname,
+				'price': this.state.price,
+				'quatity': this.state.quatity
 			};
 
 			// Adding newProduct to Server
@@ -72,9 +82,9 @@ module.exports = React.createClass({
 			// If it is, compile all product info into one object
 			var updateObj = {
 				'_id': this.props.productInfo._id,
-				'category': $('#addProduct fieldset input#inputCategory').val(),
-				'productname': $('#addProduct fieldset input#inputProductName').val(),
-				'price': $('#addProduct fieldset input#inputPrice').val()
+				'category': this.state.category,
+				'productname': this.state.productname,
+				'price': this.state.price
 			};
 
 			// Adding updateObj to Server
@@ -124,6 +134,10 @@ module.exports = React.createClass({
 		];
 		return _categoryList;
 	},
+	onChangeCategory: function(category) {
+		// change value
+		this.setState({category: category});
+	},
 	render: function() {
 		return (
 			<div id='addProduct' className="panel panel-default">
@@ -133,11 +147,20 @@ module.exports = React.createClass({
 				<fieldset>
 					<div className='input-group col-xs-6 col-sm-6 pull-left'>
 						<span className='input-group-addon w20'>Category</span>
-						<DropDownList dataList={this.getCategoryList()}/>
+						<DropDownList ref='inputCategory' 
+							value={this.state.category}
+							dataList={this.getCategoryList()}
+							onChangeData={this.onChangeCategory}/>
 					</div>
-					<InputElm ref='inputProductName' title='Product name' position='pull-right' placeholder='productname'/>
-					<InputElm ref='inputPrice' title='Price' position='pull-left' placeholder='price'/>
-					<InputElm ref='inputQuatity' title='Quatity' position='pull-right' placeholder='quatity'/>
+					<InputElm ref='inputProductName' title='Product name' 
+							position='pull-right' placeholder='Product name' 
+							valueLink={this.linkState('productname')}/>
+					<InputElm ref='inputPrice' title='Price' type='number' 
+							position='pull-left' placeholder='Price' 
+							valueLink={this.linkState('price')}/>
+					<InputElm ref='inputQuatity' title='Quatity' type='number' 
+							position='pull-right' placeholder='Quatity' 
+							valueLink={this.linkState('quatity')}/>
 					{
 						this.props.productInfo ?  
 							<button id='btnUpdateProduct' className="btn btn-primary col-xs-6 col-sm-6" onClick={this.updateProduct}>Update</button> 

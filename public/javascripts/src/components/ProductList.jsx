@@ -13,7 +13,7 @@ module.exports = React.createClass({
 							<th>Name</th>
 							<th>Price</th>
 							<th>Stock</th>
-							<th>Delete?</th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>

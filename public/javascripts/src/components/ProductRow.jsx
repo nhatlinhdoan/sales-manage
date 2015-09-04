@@ -33,8 +33,8 @@ module.exports = React.createClass({
 			<tr>
 				<td><a href='#' rel={product.category}>{product.category}</a></td>
 				<td><a href='#' onClick={this.showProductInfo}>{product.productname}</a></td>
-				<td>{product.price}</td>
-				<td>{product.stock}</td>
+				<td className='text-right'>{product.price.toLocaleString('de-DE', { style: 'currency', currency: 'VND' })}</td>
+				<td className='text-right'>{product.stock}</td>
 				<td><a href='#' onClick={this.deleteProduct}>delete</a></td>
 			</tr>
 		);
