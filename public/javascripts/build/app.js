@@ -21866,70 +21866,71 @@ module.exports = require('./lib/React');
 },{"./lib/React":32}],175:[function(require,module,exports){
 var React 			  = require('react'),
 		NavigationTop = require('./components/NavigationTop.jsx'),
+		LoginForm   = require('./forms/LoginForm.jsx'),
 		AboutForm 	  = require('./forms/AboutForm.jsx'),
 		ProductForm   = require('./forms/ProductForm.jsx'),
 		OrderForm 	  = require('./forms/OrderForm.jsx'),
 		OrderInForm   = require('./forms/OrderImportForm.jsx'),
 		OrderOutForm  = require('./forms/OrderExportForm.jsx');
 
+var Container = React.createClass({displayName: "Container",
+  render: function () {
+    return React.createElement(this.props.implComponent, null)
+  }
+});
+
 var MyApp = React.createClass({displayName: "MyApp",
-	getInitialState: function() {
+	getInitialState: function () {
 		var _tabListData = [
 			{
 				key: 'Home',
-				content: '<ProductForm />'
+				content: ProductForm
 			},
 			{
 				key: 'Products',
-				content: '<ProductForm />'
+				content: ProductForm
 			},
 			{
 				key: 'Orders',
-				content: '<OrderForm />'
+				content: OrderForm
 			},
 			{
 				key: 'About',
-				content: '<AboutForm />'
+				content: AboutForm
+			},
+			{
+				key: 'Login',
+				content: LoginForm
 			},
 		];
 		return ({
-			currentTab: 'Home',
+			currentTab: 'Login',
 			tabListData: _tabListData
 		});
 	},
-	changeTab: function(tabKey) {
+	changeTab: function (tabKey) {
 		var checkTabKey = this.state.tabListData.map(function (tab) {
-			 return tab.key === tabKey;
+			return tab.key === tabKey;
 		});
 		if(checkTabKey) {
 			this.setState({currentTab: tabKey});
 		}
 	},
-	getTab: function() {
-		switch(this.state.currentTab) {
-			case 'Products': 
-			case 'Home': 
-				return (React.createElement(ProductForm, null));
-				break;
-			case 'Orders': 
-				return (React.createElement(OrderOutForm, null));
-				break;
-			case 'About': 
-				return (React.createElement(AboutForm, null));
-				break;
-			default: 
-				return (React.createElement(ProductForm, null));
-				break;
-		}
+	getContentTab: function () {
+		var contentTab = this.state.tabListData.filter(function (tab) {
+			return (tab.key === this.state.currentTab);
+		}, this)[0];
+
+		return contentTab ? contentTab.content : ProductForm;
 	},
-	render: function() {
+	render: function () {
 		var currentForm = (
 			React.createElement("div", null, 
 				React.createElement(NavigationTop, {
 					currentTab: this.state.currentTab, 
 					tabListData: this.state.tabListData, 
 					onChangeTab: this.changeTab}), 
-				this.getTab()
+				React.createElement(Container, {implComponent: this.getContentTab()})
 			)
 		);
 		return currentForm;
@@ -21941,7 +21942,7 @@ React.render(
 	document.getElementById('wrapper')
 );
 
-},{"./components/NavigationTop.jsx":178,"./forms/AboutForm.jsx":186,"./forms/OrderExportForm.jsx":187,"./forms/OrderForm.jsx":188,"./forms/OrderImportForm.jsx":189,"./forms/ProductForm.jsx":190,"react":174}],176:[function(require,module,exports){
+},{"./components/NavigationTop.jsx":178,"./forms/AboutForm.jsx":186,"./forms/LoginForm.jsx":187,"./forms/OrderExportForm.jsx":188,"./forms/OrderForm.jsx":189,"./forms/OrderImportForm.jsx":190,"./forms/ProductForm.jsx":191,"react":174}],176:[function(require,module,exports){
 var React = require('react');
 
 module.exports = React.createClass({displayName: "exports",
@@ -21983,12 +21984,14 @@ module.exports = React.createClass({displayName: "exports",
 	getDefaultProps: function() {
 		return {
 			type: 'text',
+			valueLink: '',
+			styleClass: '',
 			placeholder: 'text here'
 		}
 	},
 	render: function() {
 		return (
-			React.createElement("div", {className: 'input-group col-xs-6 col-sm-6 '+this.props.position}, 
+			React.createElement("div", {className: 'mgb5px input-group col-xs-6 col-sm-6 '+this.props.styleClass}, 
 				React.createElement("span", {className: "input-group-addon w20"}, this.props.title), 
 				React.createElement("input", {ref: this.props.ref, className: "form-control", 
 							type: this.props.type, 
@@ -22276,7 +22279,7 @@ module.exports = React.createClass({displayName: "exports",
 			productname: '',
 			price: 0,
 			quatity: 0
-		}
+		};
 	},
 	componentWillReceiveProps: function(nextProps) {
 		if(nextProps.productInfo !== '' && nextProps.productInfo !== this.props.productInfo) {
@@ -22286,7 +22289,7 @@ module.exports = React.createClass({displayName: "exports",
 				category: nextProps.productInfo.category,
 				productname: nextProps.productInfo.productname,
 				price: nextProps.productInfo.price
-			}
+			};
 			this.setState(updateState);
 		}
 	},
@@ -22419,13 +22422,13 @@ module.exports = React.createClass({displayName: "exports",
 							onChangeData: this.onChangeCategory})
 					), 
 					React.createElement(InputElm, {ref: "inputProductName", title: "Product name", 
-							position: "pull-right", placeholder: "Product name", 
+							styleClass: "pull-right", placeholder: "Product name", 
 							valueLink: this.linkState('productname')}), 
 					React.createElement(InputElm, {ref: "inputPrice", title: "Price", type: "number", 
-							position: "pull-left", placeholder: "Price", 
+							styleClass: "pull-left", placeholder: "Price", 
 							valueLink: this.linkState('price')}), 
 					React.createElement(InputElm, {ref: "inputQuatity", title: "Quatity", type: "number", 
-							position: "pull-right", placeholder: "Quatity", 
+							styleClass: "pull-right", placeholder: "Quatity", 
 							valueLink: this.linkState('quatity')}), 
 					
 						this.props.productInfo ?  
@@ -22539,6 +22542,76 @@ module.exports = React.createClass({displayName: "exports",
 });
 
 },{"react":174}],187:[function(require,module,exports){
+var React = require('react/addons');
+var InputElm = require('./../components/InputElement.jsx');
+
+module.exports = React.createClass({displayName: "exports",
+	mixins: [React.addons.LinkedStateMixin],
+	getInitialState: function() {
+		return {
+			username: '',
+			password: ''
+		};
+	},
+	login: function(e) {
+		e.preventDefault();		
+		// check & validate input
+		var error = 0;
+		if(this.state.username === '') {
+			error++;
+			this.setState({usernameError: 'has-error'});
+		} else {
+			this.setState({usernameError: ''});
+		}
+		if(this.state.password === '') {
+			error++;
+			this.setState({passError: 'has-error'});
+		} else {
+			this.setState({passError: ''});
+		}
+
+		if(error > 0) return;
+
+		console.log('submit');
+		// if have no error then authenticate
+		var info = {
+			username: this.state.username,
+			password: CryptoJS.SHA3(this.state.password, {outputLength: 256}).toString()
+		};
+		$.ajax({
+			type: 'POST',
+			dataType: 'json',
+			url: 'api/user/login',
+      crossOrigin: true,
+			data: info,
+			success: function(data) {
+				console.log(data);
+			}
+		});
+	},
+	render: function() {
+		return (
+			React.createElement("div", {id: "loginForm", className: "col-xs-12"}, 
+				React.createElement("fieldset", null, 
+					React.createElement(InputElm, {ref: "inputUsername", title: "Username", 
+						valueLink: this.linkState('username'), 
+						styleClass: this.state.usernameError, 
+						placeholder: "Username"}), 
+					React.createElement(InputElm, {ref: "inputPassword", title: "Password", 
+						valueLink: this.linkState('password'), 
+						styleClass: this.state.passError, 
+						placeholder: "Password", type: "password"}), 
+					React.createElement("div", null, 
+						React.createElement("input", {type: "checkbox", id: "remember"}), React.createElement("label", {htmlFor: "remember"}, " Remember? ")
+					), 
+					React.createElement("button", {ref: "btnLogin", className: "btn btn-primary col-xs-2 col-sm-2", onClick: this.login}, "Login")
+				)
+			)
+		);
+	}
+});
+
+},{"./../components/InputElement.jsx":177,"react/addons":2}],188:[function(require,module,exports){
 var React = require('react');
 var InputElm = require('./../components/InputElement.jsx');
 var DropDownList = require('./../components/DropDownList.jsx');
@@ -22727,8 +22800,8 @@ module.exports = React.createClass({displayName: "exports",
 						React.createElement("button", {ref: "btnAddOrder", className: "btn btn-primary col-xs-2 col-sm-2 pull-right", onClick: this.addOrder}, "Save")
 					), 
 					React.createElement("fieldset", null, 
-							React.createElement(InputElm, {ref: "inputShopName", position: "pull-left", title: "Shop Name", placeholder: "shopname"}), 
-							React.createElement(InputElm, {ref: "inputCustomerName", position: "pull-right", title: "Customer Name", placeholder: "customername"}), 
+							React.createElement(InputElm, {ref: "inputShopName", styleClass: "pull-left", title: "Shop Name", placeholder: "shopname"}), 
+							React.createElement(InputElm, {ref: "inputCustomerName", styleClass: "pull-right", title: "Customer Name", placeholder: "customername"}), 
 							
 							React.createElement("div", {className: "input-group col-xs-6 col-sm-6 pull-left"}, 
 								React.createElement("span", {className: "input-group-addon w20"}, "Order Status"), 
@@ -22736,13 +22809,13 @@ module.exports = React.createClass({displayName: "exports",
 									dataList: this.getOrderStatusList(), 
 									onChangeData: this.onChangeStatus})
 							), 
-							React.createElement(InputElm, {ref: "inputCustomerPhone", position: "pull-right", title: "Customer Phone", placeholder: "customerphone"}), 
+							React.createElement(InputElm, {ref: "inputCustomerPhone", styleClass: "pull-right", title: "Customer Phone", placeholder: "customerphone"}), 
 
-							React.createElement(InputElm, {ref: "inputOrderDate", position: "pull-left", title: "Order Date", placeholder: ""}), 
-							React.createElement(InputElm, {ref: "inputCustomerAddress", position: "pull-right", title: "Customer Address", placeholder: "customeraddress"}), 
+							React.createElement(InputElm, {ref: "inputOrderDate", styleClass: "pull-left", title: "Order Date", placeholder: ""}), 
+							React.createElement(InputElm, {ref: "inputCustomerAddress", styleClass: "pull-right", title: "Customer Address", placeholder: "customeraddress"}), 
 
-							React.createElement(InputElm, {ref: "inputBillingDate", position: "pull-left", title: "Billing Date", placeholder: ""}), 
-							React.createElement(InputElm, {ref: "inputCustomerNote", position: "pull-right", title: "Customer Note", placeholder: "customernote"})
+							React.createElement(InputElm, {ref: "inputBillingDate", styleClass: "pull-left", title: "Billing Date", placeholder: ""}), 
+							React.createElement(InputElm, {ref: "inputCustomerNote", styleClass: "pull-right", title: "Customer Note", placeholder: "customernote"})
 					)
 				), 
 
@@ -22758,11 +22831,12 @@ module.exports = React.createClass({displayName: "exports",
 	}
 });
 
-},{"./../components/DropDownList.jsx":176,"./../components/InputElement.jsx":177,"./../components/OrderExportItemList.jsx":179,"react":174}],188:[function(require,module,exports){
+},{"./../components/DropDownList.jsx":176,"./../components/InputElement.jsx":177,"./../components/OrderExportItemList.jsx":179,"react":174}],189:[function(require,module,exports){
 var React = require('react');
 
 module.exports = React.createClass({displayName: "exports",
   getInitialState: function() {
+  	return {}
   },
   componentDidMount: function() {
   },
@@ -22772,11 +22846,12 @@ module.exports = React.createClass({displayName: "exports",
   }
 });
 
-},{"react":174}],189:[function(require,module,exports){
+},{"react":174}],190:[function(require,module,exports){
 var React = require('react');
 
 module.exports = React.createClass({displayName: "exports",
 	getInitialState: function() {
+		return {}
 	},
 	componentDidMount: function() {
 	},
@@ -22786,7 +22861,7 @@ module.exports = React.createClass({displayName: "exports",
 	}
 });
 
-},{"react":174}],190:[function(require,module,exports){
+},{"react":174}],191:[function(require,module,exports){
 var React = require('react');
 var ProductList = require('./../components/ProductList.jsx');
 var ProductAdding = require('./../components/ProductAdding.jsx');

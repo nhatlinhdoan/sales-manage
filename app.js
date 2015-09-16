@@ -6,6 +6,8 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     config = require('./config');
 
+var expressJwt = require('express-jwt');
+
 // Mongoose
 var mongoose = require('mongoose');
 mongoose.connect(config.db.mongodb, function(err) {
@@ -19,13 +21,21 @@ mongoose.connect(config.db.mongodb, function(err) {
 // db.on('error', console.error.bind(console, 'connection error:'));
 // db.once('open', function () {});
 
-var product = require('./model/product');
-var order = require('./model/order');
-var orderitem = require('./model/orderitem');
+// Model
+var product = require('./model/Product');
+var order = require('./model/Order');
+var orderitem = require('./model/OrderItem');
+var user = require('./model/User');
+var userInfo = require('./model/UserInfo');
 
+// routes
 var routes = require('./routes/index');
-var products = require('./api/product');
-var orders = require('./api/order');
+
+// API
+var productAPI = require('./api/product');
+var orderAPI = require('./api/order');
+var userAPI = require('./api/user');
+var auth = require('./authentication/authentication');
 
 var app = express();
 
@@ -48,8 +58,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/api/products', products);
-app.use('/api/orders', orders);
+app.use('/authentication', auth);
+// app.use('/api', expressJwt({secret: secret}));
+app.use('/api/products', productAPI);
+app.use('/api/orders', orderAPI);
+app.use('/api/user', userAPI);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

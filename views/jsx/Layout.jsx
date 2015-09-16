@@ -23,7 +23,8 @@ var Layout = React.createClass({
 					<script src='/javascripts/lib/moment.min.js'>
 					<script src='/javascripts/lib/bootstrap.min.js'>
 					// <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"/>
-					<script src="/javascripts/lib/bootstrap-datetimepicker.min.js"/>
+					<script src='/javascripts/lib/bootstrap-datetimepicker.min.js'/>
+					<script src='/javascripts/lib/sha3.js'/>
 					<script src='/javascripts/build/app.js'/>
 					<script src='/javascripts/util/global.js'/>
 				</body>

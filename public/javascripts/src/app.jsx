@@ -1,69 +1,70 @@
 var React 			  = require('react'),
 		NavigationTop = require('./components/NavigationTop.jsx'),
+		LoginForm   = require('./forms/LoginForm.jsx'),
 		AboutForm 	  = require('./forms/AboutForm.jsx'),
 		ProductForm   = require('./forms/ProductForm.jsx'),
 		OrderForm 	  = require('./forms/OrderForm.jsx'),
 		OrderInForm   = require('./forms/OrderImportForm.jsx'),
 		OrderOutForm  = require('./forms/OrderExportForm.jsx');
 
+var Container = React.createClass({
+  render: function () {
+    return <this.props.implComponent />
+  }
+});
+
 var MyApp = React.createClass({
-	getInitialState: function() {
+	getInitialState: function () {
 		var _tabListData = [
 			{
 				key: 'Home',
-				content: '<ProductForm />'
+				content: ProductForm
 			},
 			{
 				key: 'Products',
-				content: '<ProductForm />'
+				content: ProductForm
 			},
 			{
 				key: 'Orders',
-				content: '<OrderForm />'
+				content: OrderForm
 			},
 			{
 				key: 'About',
-				content: '<AboutForm />'
+				content: AboutForm
+			},
+			{
+				key: 'Login',
+				content: LoginForm
 			},
 		];
 		return ({
-			currentTab: 'Home',
+			currentTab: 'Login',
 			tabListData: _tabListData
 		});
 	},
-	changeTab: function(tabKey) {
+	changeTab: function (tabKey) {
 		var checkTabKey = this.state.tabListData.map(function (tab) {
-			 return tab.key === tabKey;
+			return tab.key === tabKey;
 		});
 		if(checkTabKey) {
 			this.setState({currentTab: tabKey});
 		}
 	},
-	getTab: function() {
-		switch(this.state.currentTab) {
-			case 'Products': 
-			case 'Home': 
-				return (<ProductForm />);
-				break;
-			case 'Orders': 
-				return (<OrderOutForm />);
-				break;
-			case 'About': 
-				return (<AboutForm />);
-				break;
-			default: 
-				return (<ProductForm />);
-				break;
-		}
+	getContentTab: function () {
+		var contentTab = this.state.tabListData.filter(function (tab) {
+			return (tab.key === this.state.currentTab);
+		}, this)[0];
+
+		return contentTab ? contentTab.content : ProductForm;
 	},
-	render: function() {
+	render: function () {
 		var currentForm = (
 			<div>
 				<NavigationTop 
 					currentTab={this.state.currentTab} 
 					tabListData={this.state.tabListData}
 					onChangeTab={this.changeTab}/>
-				{this.getTab()}
+				<Container implComponent={this.getContentTab()} />
 			</div>
 		);
 		return currentForm;

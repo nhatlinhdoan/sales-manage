@@ -186,8 +186,8 @@ module.exports = React.createClass({
 						<button ref='btnAddOrder' className='btn btn-primary col-xs-2 col-sm-2 pull-right' onClick={this.addOrder}>Save</button>
 					</div>
 					<fieldset>
-							<InputElm ref='inputShopName' position='pull-left' title='Shop Name' placeholder='shopname'/>
-							<InputElm ref='inputCustomerName' position='pull-right' title='Customer Name' placeholder='customername'/>
+							<InputElm ref='inputShopName' styleClass='pull-left' title='Shop Name' placeholder='shopname'/>
+							<InputElm ref='inputCustomerName' styleClass='pull-right' title='Customer Name' placeholder='customername'/>
 							
 							<div className='input-group col-xs-6 col-sm-6 pull-left'>
 								<span className='input-group-addon w20'>Order Status</span>
@@ -195,13 +195,13 @@ module.exports = React.createClass({
 									dataList={this.getOrderStatusList()}
 									onChangeData={this.onChangeStatus}/>
 							</div>
-							<InputElm ref='inputCustomerPhone' position='pull-right' title='Customer Phone' placeholder='customerphone'/>
+							<InputElm ref='inputCustomerPhone' styleClass='pull-right' title='Customer Phone' placeholder='customerphone'/>
 
-							<InputElm ref='inputOrderDate' position='pull-left' title='Order Date' placeholder=''/>
-							<InputElm ref='inputCustomerAddress' position='pull-right' title='Customer Address' placeholder='customeraddress'/>
+							<InputElm ref='inputOrderDate' styleClass='pull-left' title='Order Date' placeholder=''/>
+							<InputElm ref='inputCustomerAddress' styleClass='pull-right' title='Customer Address' placeholder='customeraddress'/>
 
-							<InputElm ref='inputBillingDate' position='pull-left' title='Billing Date' placeholder=''/>
-							<InputElm ref='inputCustomerNote' position='pull-right' title='Customer Note' placeholder='customernote'/>
+							<InputElm ref='inputBillingDate' styleClass='pull-left' title='Billing Date' placeholder=''/>
+							<InputElm ref='inputCustomerNote' styleClass='pull-right' title='Customer Note' placeholder='customernote'/>
 					</fieldset>
 				</div>
 

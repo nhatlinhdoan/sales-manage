@@ -10,7 +10,7 @@ module.exports = React.createClass({
 			productname: '',
 			price: 0,
 			quatity: 0
-		}
+		};
 	},
 	componentWillReceiveProps: function(nextProps) {
 		if(nextProps.productInfo !== '' && nextProps.productInfo !== this.props.productInfo) {
@@ -20,7 +20,7 @@ module.exports = React.createClass({
 				category: nextProps.productInfo.category,
 				productname: nextProps.productInfo.productname,
 				price: nextProps.productInfo.price
-			}
+			};
 			this.setState(updateState);
 		}
 	},
@@ -153,13 +153,13 @@ module.exports = React.createClass({
 							onChangeData={this.onChangeCategory}/>
 					</div>
 					<InputElm ref='inputProductName' title='Product name' 
-							position='pull-right' placeholder='Product name' 
+							styleClass='pull-right' placeholder='Product name' 
 							valueLink={this.linkState('productname')}/>
 					<InputElm ref='inputPrice' title='Price' type='number' 
-							position='pull-left' placeholder='Price' 
+							styleClass='pull-left' placeholder='Price' 
 							valueLink={this.linkState('price')}/>
 					<InputElm ref='inputQuatity' title='Quatity' type='number' 
-							position='pull-right' placeholder='Quatity' 
+							styleClass='pull-right' placeholder='Quatity' 
 							valueLink={this.linkState('quatity')}/>
 					{
 						this.props.productInfo ?  
