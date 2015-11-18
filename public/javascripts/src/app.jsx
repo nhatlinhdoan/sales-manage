@@ -26,7 +26,7 @@ var MyApp = React.createClass({
 			},
 			{
 				key: 'Orders',
-				content: OrderForm
+				content: OrderOutForm
 			},
 			{
 				key: 'About',
